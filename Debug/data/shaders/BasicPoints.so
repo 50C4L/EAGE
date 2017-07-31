@@ -1,0 +1,18 @@
+#ifndef VERTEX
+
+void main()
+{
+	gl_Position = ftransform();
+	gl_FrontColor = gl_Color;
+}
+
+#endif
+
+#ifndef FRAGMENT
+
+void main()
+{
+	gl_FragColor = gl_Color;
+}
+
+#endif

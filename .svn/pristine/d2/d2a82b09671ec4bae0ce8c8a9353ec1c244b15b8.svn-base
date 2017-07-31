@@ -1,0 +1,66 @@
+#include "Debugger.h"
+#include <iostream>
+#include <fstream>
+
+#define DEBUG_BUFFER_SIZE	256
+
+void eage::debug( const char* format, ... )
+{
+	char buffer[DEBUG_BUFFER_SIZE];
+	char* p = buffer;
+
+	va_list args;
+	va_start( args, format );
+	vsprintf( p, format, args );
+	va_end( args );
+
+	Debugger::getInstance()->debug( buffer );
+}
+
+
+
+Debugger* Debugger::_instance = 0;
+
+Debugger::Debugger()
+{
+	_log.clear();
+}
+
+
+
+Debugger::~Debugger()
+{
+}
+
+
+
+Debugger* Debugger::getInstance()
+{
+	if( !_instance )	_instance = new Debugger();
+	return _instance;
+}
+
+
+
+void Debugger::clearLog()
+{
+	_log.clear();
+}
+
+
+
+void Debugger::debug( std::string info )
+{
+	std::cout << info;
+	_log += info;
+}
+
+
+void Debugger::ouputLogFile( std::string path )
+{
+	std::ofstream file;
+
+	file.open( path );
+	file << _log;
+	file.close();
+}

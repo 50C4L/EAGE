@@ -1,0 +1,403 @@
+#include "RenderModule.h"
+#include "../manager/ShaderManager.h"
+#include "../manager/TextureManager.h"
+#include "../graphics/FrameBufferObject.h"
+#include "../helper/helper.h"
+#include "../math/PhysicsModule.h"
+#include <stdio.h>
+
+// Friendly functions
+Camera* eage::getMainCamera()
+{
+	return RenderModule::getInstance()->getMainCamera();
+}
+
+void eage::setRenderMode( EAGE_RENDER_MODE mode )
+{
+	RenderModule::getInstance()->setRenderState( mode );
+}
+
+void eage::setPostFXShader( int id)
+{
+	RenderModule::getInstance()->setPostFXShader( id );
+}
+
+void eage::appendFBAObject( FBAnimObject* obj )
+{
+	RenderModule::getInstance()->addFBAnimObject( obj );
+	if( obj->isPhysx() )
+		PhysicsModule::getInstance()->addObject( obj );
+}
+
+void eage::appendObject( VisibleObject* obj )
+{
+	RenderModule::getInstance()->addObj( obj );
+}
+
+void eage::appendUIObject( UIObject* obj )
+{
+	RenderModule::getInstance()->addUIObject( obj );
+	//if( obj->isPhysx() )
+		//PhysicsModule::getInstance()->addObject( obj );
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+RenderModule* RenderModule::_instance = 0;
+
+RenderModule* RenderModule::getInstance()
+{
+	if( !_instance ) _instance = new RenderModule();
+	return _instance;
+}
+
+RenderModule::RenderModule()
+{
+	_tmPtr			= 0;
+	_shaMan			= 0;
+	_rlMan			= 0;
+	_uioMan			= 0;
+	_aniMan			= 0;
+	_wnd			= 0;
+	_fps			= 60.0f;
+	_aspect			= 0.0f;
+	_postFBO		= 0;
+	_postShader		= 0;
+	_mainCamera		= 0;
+	_isPostFX		= false;
+	_isListReady	= false;
+}
+
+
+
+RenderModule::~RenderModule()
+{
+}
+
+
+bool RenderModule::initialize( TextureManager* tmPtr )
+{
+	_tmPtr = tmPtr;
+
+	printf( "Render Module: Instancing render list manager ......\n" );
+	_rlMan = RenderListManager::getInstanc();
+
+	printf( "Render Module: Instancing UI object manager ......\n" );
+	_uioMan = UIObjectManager::getInstance();
+
+	printf( "Render Module: Instancing animation object manager ......\n" );
+	_aniMan	= AnimationManager::getInstance();
+
+	printf( "Render Module: Initializing shader manager ......\n" );
+	_shaMan = ShaderManager::getInstance();
+
+	printf( "Render Module: Initializing main camera ......\n" );
+	_mainCamera = new Camera();
+
+	return true;
+}
+
+Camera* RenderModule::getMainCamera()
+{
+	if( !_mainCamera )	_mainCamera = new Camera();
+	return _mainCamera;
+}
+
+void RenderModule::shutdown()
+{
+	if( _rlMan )
+		delete _rlMan;
+	if( _uioMan )
+		delete _uioMan;
+	if( _aniMan )
+		delete _aniMan;
+	if( _shaMan )
+		delete _shaMan;
+
+	_rlMan	= 0;
+	_uioMan = 0;
+	_aniMan = 0;
+	_shaMan = 0;
+}
+
+void RenderModule::create()
+{
+	if( _shaMan->rebuild() )
+	{
+		printf( "Render Module: Generating render lists...\n" );
+		int listNum = _rlMan->genLists();
+		printf( "Render Module: %d render lists have been generated\n", listNum );
+		int objNum = _rlMan->classifyObjects();
+		printf( "Render Module: %d objects have been classified\n", objNum );
+	}
+	else
+	{
+		printf( "<ERROR> Shader Manager: Failed to load default shader.\n" );
+		return;
+	}
+}
+
+bool RenderModule::renderSplash( float deltaTime, float length )
+{
+	if( deltaTime <= 0.0 )
+		deltaTime = 0.05f;
+
+	int counter				= int(length*1000.0f/deltaTime);
+	//printf( "Counter: %f\n", deltaTime );
+	static int frameCount	= 0;
+	static bool firstTime	= true;
+	//float fadein			= length/3.0f * fps;
+	//float fadeout			= length/3.0f * fps;
+	float fadein			= (length*1000.0f/deltaTime)/3.0f;
+
+	frameCount++;
+
+	if( frameCount >= counter )
+	{
+		//_tmPtr->clear();
+		_tmPtr->unload( 9999 );
+		_shaMan->release( 9999 );
+		glDisable( GL_BLEND );
+		glEnable( GL_DEPTH_TEST );
+		return false;
+	}
+	if( firstTime )
+	{
+		printf( "Render Module: Preparing splash screen\n" );
+		_tmPtr->loadFromFile( "data/textures/splash.png", 9999, GL_LINEAR );
+		_shaMan->loadFromFile( "data/shaders/AlphaFading_Texture.so", 9999 );
+		firstTime = false;
+	}
+
+	glEnable( GL_BLEND );   
+	glDisable( GL_DEPTH_TEST );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho( 0, 1, 0, 1, -1, 1 );
+
+	// banner
+	static float alpha = 0.0f;
+	_shaMan->find( 9999 )->uniform( "alpha", alpha );
+	_shaMan->bind( 9999 );
+	_tmPtr->bind( 9999 );
+	glBegin( GL_QUADS );
+		glTexCoord2f( 0.0, 1.0 );
+		glVertex3f( 0.0, 1.0, 0.0f );
+		glTexCoord2f( 0.0, 0.0 );
+		glVertex3f( 0.0, 0.0, 0.0f );
+		glTexCoord2f( 1.0, 0.0 );
+		glVertex3f( 1.0, 0.0, 0.0f );
+		glTexCoord2f( 1.0 ,1.0 );
+		glVertex3f( 1.0 , 1.0, 0.0f );
+	glEnd();
+	_shaMan->disable();
+	
+	if( alpha <= 1.0f )
+		alpha += 1.0f/fadein;
+
+	glPopMatrix();
+
+	return true;
+}
+
+void RenderModule::setRenderState( EAGE_RENDER_MODE mode )
+{
+	switch( mode )
+	{
+	case EAGE_DIRECT_RENDER:
+		{
+			_isPostFX = false;
+			printf( "Render Module: Render mode is direct rendering.\n" );
+			break;
+		}
+	case EAGE_POST_EFFECT:
+		{
+			// create a frame buffer object and a full screen quad for post rendering
+			if( !_postFBO )
+				_postFBO = new FrameBufferObject( _wnd->getSize().x, _wnd->getSize().y, GL_LINEAR );
+
+			_fullScreenQuad = new VisibleObject();
+			_fullScreenQuad->setSize(	sf::Vector2f( 0.0f, (float)_wnd->getSize().y ),							// left top
+										sf::Vector2f( 0.0f, 0.0f ),												// lefr bottom
+										sf::Vector2f( (float)_wnd->getSize().x, 0.0f ),							// right bottom
+										sf::Vector2f( (float)_wnd->getSize().x, (float)_wnd->getSize().y ) );	// right top
+			_fullScreenQuad->setTexture( 0 );
+			_fullScreenQuad->setLayer( 0.0 );
+
+			_isPostFX = true;
+			printf( "Render Module: Render mode is post process rendering.\n" );
+			break;
+		}
+	case EAGE_WIREFRAME:
+		{
+			glPolygonMode( GL_FRONT, GL_LINE );
+			printf( "Render Module: Render mode is wireframe rendering.\n" );
+			break;
+		}
+	}
+}
+
+void RenderModule::setPostFXShader( int shaderId )
+{
+	_postShader = shaderId;
+}
+
+void RenderModule::clear()
+{
+	if( _rlMan )
+		_rlMan->clearAll();
+	if( _uioMan )
+		_uioMan->clear();
+	if( _aniMan )
+		_aniMan->clear();
+	if( _shaMan )
+		_shaMan->clear();
+}
+
+void RenderModule::clearBuffers()
+{
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+}
+
+void RenderModule::render()
+{
+	this->_update();
+	
+	if( !_isPostFX )
+	{
+		// direct render all objects to screen
+		this->clearBuffers();
+		_mainCamera->activate( _screenWidth, _screenHeight );
+		if( _rlMan )
+		{
+			_rlMan->renderAll();
+			this->renderUILayer();
+		}
+	}
+	else if( _isPostFX )
+	{
+		// render the whole scene to a frame buffer object
+		_postFBO->begin();
+		this->clearBuffers();
+		_mainCamera->activate( _screenWidth, _screenHeight );
+		if( _rlMan )
+		{
+			_rlMan->renderAll();
+			this->renderUILayer();
+		}
+		_postFBO->end();
+
+		this->clearBuffers();
+		_shaMan->bind( _postShader );
+		this->_renderToFullScreenQuad( _postFBO->getRTT() );
+		_shaMan->disable();
+	}
+}
+
+void RenderModule::renderUILayer()
+{
+	glPushMatrix();
+		glLoadIdentity();
+		glOrtho( 0.0, _screenWidth, 0.0, _screenHeight, -1.0, 1.0 );
+		_uioMan->render();
+	glPopMatrix();
+}
+
+
+void RenderModule::addObj( VisibleObject* obj )
+{
+	if( _rlMan )
+		_rlMan->appendObject( obj );
+	else
+		printf( "<ERROR> Render Module: Invalid render list manager pointer.\n" );
+}
+
+void RenderModule::addUIObject( UIObject* obj )
+{
+	if( _uioMan )
+	{
+		_uioMan->registerObject( obj );
+		//this->addObj( obj );
+	}
+	else
+		printf( "<ERROR> Render Module: Invalid UI object manager pointer.\n" );
+}
+
+void RenderModule::addFBAnimObject( FBAnimObject* obj )
+{
+	if( _aniMan )
+	{
+		_aniMan->addFBObject( obj );
+		this->addObj( obj );
+	}
+	else
+		printf( "<ERROR> Render Module: Invalid UI object manager pointer.\n" );
+}
+
+void RenderModule::addShaderObject( ShaderObject* obj )
+{
+	if( _shaMan )
+	{
+	}
+}
+
+void RenderModule::_update()
+{
+	if( _uioMan )
+	{
+		_uioMan->update( _wnd, _aspect );
+	}
+	else
+		printf( "<ERROR> Render Module: Invalid UI object manager pointer.\n" );
+
+	if( _aniMan )
+		_aniMan->update( _fps );
+	else
+		printf( "<ERROR> Render Module: Invalid animation object manager pointer.\n" );
+
+	_mainCamera->focusFollowedObject();
+}
+
+void RenderModule::_renderToFullScreenQuad( GLuint renderTargetTexture )
+{
+	// fill the full screen quad with render target texture from FBO
+	glBindTexture( GL_TEXTURE_2D, renderTargetTexture );
+	glPushMatrix();
+		glLoadIdentity();
+		glOrtho( 0.0, _screenWidth, 0.0, _screenHeight, -1.0, 1.0 );
+		_fullScreenQuad->render();
+	glPopMatrix();
+	glBindTexture( GL_TEXTURE_2D, 0 );
+}
+
+void RenderModule::reshape( sf::RenderWindow* wnd )
+{
+	_wnd = wnd;
+	_screenWidth	= (double)wnd->getSize().x;
+	_screenHeight	= (double)wnd->getSize().y;
+
+	if( _wnd->getSize().y == 0 )
+		_aspect = (GLfloat)_wnd->getSize().x;
+	else
+		_aspect = (GLfloat)_wnd->getSize().x/(GLfloat)_wnd->getSize().y;
+
+	glViewport( 0, 0, _wnd->getSize().x, _wnd->getSize().y );
+
+	glMatrixMode( GL_MODELVIEW );
+	glLoadIdentity();
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+	//glOrtho( -1.0, 1.0, -1.0/aspect, 1.0/aspect, 1.0, -10.0 );
+	//glOrtho( 0.0, 1.0, 0.0, 1.0/_aspect, 1.0, -10.0 );
+	//glOrtho( 0.0, (double)wnd->getSize().x, 0.0, (double)wnd->getSize().y, -1.0, 1.0 );
+	_mainCamera->setPosition( sf::Vector2f( float(_screenWidth/2.0), float(_screenHeight/2.0) ) );
+	_mainCamera->setViewClip( -1.0, 1.0 );
+	_mainCamera->activate( _screenWidth, _screenHeight );
+}
+
+void RenderModule::gether( float fps )
+{
+	_fps = fps;
+}

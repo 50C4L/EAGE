@@ -1,0 +1,36 @@
+#ifndef _PHYSICSMODULE_H
+#define _PHYSICSMODULE_H
+
+// multi-progress physics engine
+
+#include <SFML\System.hpp>
+#include <list>
+#include "../helper/Module.h"
+
+class VisibleObject;
+
+class PhysicsModule:Module
+{
+public:
+	PhysicsModule();
+	virtual ~PhysicsModule();
+
+	bool initialize();
+	void shutdown();
+
+	void setGravity( sf::Vector2f value );
+	void setFPS( float value );
+	void addObject( VisibleObject* obj );
+	void clear();
+	void update();
+
+private:
+	std::list<VisibleObject*> _objectList;
+
+	sf::Vector2f	_gravity;
+	float			_currentFPS;
+};
+
+
+#endif
+

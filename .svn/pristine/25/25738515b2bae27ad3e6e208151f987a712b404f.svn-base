@@ -1,0 +1,42 @@
+#ifndef _RENDERLIST_H
+#define _RENDERLIST_H
+
+#include <list>
+#include <string>
+#include "../helper/helper.h"
+
+class RenderList
+{
+	typedef std::list<VisibleObject*>::iterator _listIt;
+
+public:
+				RenderList();
+				~RenderList();
+	void		setName( std::string name );
+	void		setID( int id );
+	void		push( VisibleObject* obj );
+	void		render();
+	void		clear();
+	std::string getName();
+	int			getID();
+
+private:
+	int							_id;
+	std::string					_name;
+	std::list<VisibleObject*>	_objList;
+
+	struct Deallocator
+	{
+		void operator()( VisibleObject* p )
+		{
+			if( p )
+			{
+				delete p;
+				p = 0;
+			}
+		}
+	};
+
+};	// class Render
+
+#endif

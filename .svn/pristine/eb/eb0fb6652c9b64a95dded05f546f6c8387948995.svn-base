@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{271700AE-1E80-46B2-A88A-2264F5C7E082}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Box</RootNamespace>
+    <ProjectName>EAGE</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>E:\SFML-2.1\include;E:\PhysFS\include;$(IncludePath)</IncludePath>
+    <TargetExt>.dll</TargetExt>
+    <IntDir>$(Configuration)\obj\</IntDir>
+    <LibraryPath>E:\PhysFS\lib\debug;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>E:\SFML-2.1\include;$(IncludePath)</IncludePath>
+    <IntDir>$(Configuration)\obj\</IntDir>
+    <TargetExt>.dll</TargetExt>
+    <LibraryPath>E:\SFML-2.1\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>E:\SFML-2.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>physfs.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib;opengl32.lib;glew32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy "E:\SFML-2.1\bin\sfml-window-d-2.dll" "$(OutDir)"
+copy "E:\SFML-2.1\bin\sfml-system-d-2.dll" "$(OutDir)"
+copy "E:\SFML-2.1\bin\sfml-graphics-d-2.dll" "$(OutDir)"
+copy "E:\SFML-2.1\bin\sfml-audio-d-2.dll" "$(OutDir)"
+copy "E:\SFML-2.1\bin\openal32.dll" "$(OutDir)"
+copy "E:\SFML-2.1\bin\libsndfile-1.dll" "$(OutDir)"
+copy "E:\PhysFS\bin\debug\physfs.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>G:\SFML\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;sfml-audio.lib;opengl32.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy "E:\SFML-2.1\bin\sfml-window-2.dll" "$(OutDir)"
+copy "E:\SFML-2.1\bin\sfml-system-2.dll" "$(OutDir)"
+copy "E:\SFML-2.1\bin\sfml-graphics-2.dll" "$(OutDir)"
+copy "E:\SFML-2.1\bin\sfml-audio-2.dll" "$(OutDir)"
+copy "E:\SFML-2.1\bin\openal32.dll" "$(OutDir)"
+copy "E:\SFML-2.1\bin\libsndfile-1.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\core\System.cpp" />
+    <ClCompile Include="src\graphics\FrameBufferObject.cpp" />
+    <ClCompile Include="src\graphics\RenderList.cpp" />
+    <ClCompile Include="src\graphics\RenderModule.cpp" />
+    <ClCompile Include="src\graphics\ShaderObject.cpp" />
+    <ClCompile Include="src\helper\Camera.cpp" />
+    <ClCompile Include="src\helper\EFont.cpp" />
+    <ClCompile Include="src\helper\FBAnimObject.cpp" />
+    <ClCompile Include="src\helper\input.cpp" />
+    <ClCompile Include="src\helper\Module.cpp" />
+    <ClCompile Include="src\helper\State.cpp" />
+    <ClCompile Include="src\helper\Timer.cpp" />
+    <ClCompile Include="src\helper\UIObject.cpp" />
+    <ClCompile Include="src\helper\VisibleObject.cpp" />
+    <ClCompile Include="src\manager\AnimationManager.cpp" />
+    <ClCompile Include="src\manager\FontManager.cpp" />
+    <ClCompile Include="src\manager\RenderListManager.cpp" />
+    <ClCompile Include="src\manager\ShaderManager.cpp" />
+    <ClCompile Include="src\manager\AudioManager.cpp" />
+    <ClCompile Include="src\manager\StateManager.cpp" />
+    <ClCompile Include="src\manager\TextureManager.cpp" />
+    <ClCompile Include="src\manager\UIObjectManager.cpp" />
+    <ClCompile Include="src\math\AABB.cpp" />
+    <ClCompile Include="src\math\BSphere.cpp" />
+    <ClCompile Include="src\math\Environment.cpp" />
+    <ClCompile Include="src\math\math.cpp" />
+    <ClCompile Include="src\math\PhysicsModule.cpp" />
+    <ClCompile Include="src\resource\ResourceModule.cpp" />
+    <ClCompile Include="src\UI\Button.cpp" />
+    <ClCompile Include="src\UI\Label.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\core\System.h" />
+    <ClInclude Include="src\EAGE.h" />
+    <ClInclude Include="src\graphics\FrameBufferObject.h" />
+    <ClInclude Include="src\graphics\RenderList.h" />
+    <ClInclude Include="src\graphics\RenderModule.h" />
+    <ClInclude Include="src\graphics\ShaderObject.h" />
+    <ClInclude Include="src\helper\EFont.h" />
+    <ClInclude Include="src\helper\helper.h" />
+    <ClInclude Include="src\helper\Module.h" />
+    <ClInclude Include="src\helper\OpenGL.h" />
+    <ClInclude Include="src\helper\Timer.h" />
+    <ClInclude Include="src\manager\AnimationManager.h" />
+    <ClInclude Include="src\manager\FontManager.h" />
+    <ClInclude Include="src\manager\RenderListManager.h" />
+    <ClInclude Include="src\manager\ShaderManager.h" />
+    <ClInclude Include="src\manager\AudioManager.h" />
+    <ClInclude Include="src\manager\StateManager.h" />
+    <ClInclude Include="src\manager\TextureManager.h" />
+    <ClInclude Include="src\manager\UIObjectManager.h" />
+    <ClInclude Include="src\math\Environment.h" />
+    <ClInclude Include="src\math\math.h" />
+    <ClInclude Include="src\math\PhysicsModule.h" />
+    <ClInclude Include="src\resource\ResourceModule.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

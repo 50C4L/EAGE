@@ -1,0 +1,301 @@
+#include "System.h"
+#include <fstream>
+#include <stdio.h>
+#include "../helper/OpenGL.h"
+#include "../math/math.h"
+
+#define MILSPERSEC 1000.0
+#define MICSPERSEC 1000000.0
+
+System* System::_instance = 0;
+
+EAGE* engineCreate()
+{
+	return (EAGE*)System::getInstance();
+}
+
+System::System()
+{
+	// default settings
+	_cfgPath				= "config.cfg";
+	_params.isFullScreen	= false;
+	_params.isVSync			= true;
+	_params.windowSize		= sf::Vector2i( 1280, 800 );
+	strcpy_s( _params.windowTitle, "EAGE Window" );
+	_window					= NULL;
+	_event					= NULL;
+	_isSplash				= false;
+	_splashLength			= 2.0f;
+
+	// managers and modules
+	_texman					= NULL;
+	_stateman				= NULL;
+	_renderModule			= NULL;
+	_resourceModule			= NULL;
+	_physicsModule			= NULL;
+
+	// debug info
+	_frameInterval			= 1.0;
+
+	// states
+	_startState				= 0;
+}
+
+System::~System()
+{
+}
+
+System* System::getInstance()
+{
+	if( !_instance )	_instance = new System();
+	return _instance;
+}
+
+void System::loadCFG( std::string path )
+{
+	if( !path.empty() )
+		_cfgPath = path;
+}
+
+int System::appendState( int id, State* state )
+{
+	if( _stateman && state )
+	{
+		_stateman->appendState( id, state );
+		return id;
+	}
+	return 0;
+}
+
+void System::setStartState( int id )
+{
+	if( id != 0 )
+		_startState = id;
+}
+
+void System::setSplashLength( float length )
+{
+	_splashLength = length;
+}
+
+void System::enableSplashScreen( bool value )
+{
+	_isSplash = value;
+}
+
+bool System::initialize()
+{
+	// load cfg file
+	printf( "CORE: Initializing...\n" );
+	printf( "CORE: Preparing to read cfg file...\n" );
+	if( !this->_readCFG() ) printf( "CORE: Failed to open cfg file, genera4ting one with default parameters.\n" );
+	_window = new  sf::RenderWindow;
+	if( !_params.isFullScreen)	_window->create( sf::VideoMode( _params.windowSize.x, _params.windowSize.y ), _params.windowTitle );
+	else						_window->create( sf::VideoMode( _params.windowSize.x, _params.windowSize.y ), _params.windowTitle, sf::Style::Fullscreen );
+	if( _params.isVSync )		_window->setVerticalSyncEnabled( true );
+
+	// init OGL
+	printf( "CORE: Initializing OpenGL states...\n" );
+	if( !this->_initGL() ) return false;
+
+	// init timer
+	printf( "CORE: Main timer instanced.\n" );
+	_timer = new Timer();
+
+	// init modules
+	printf( "CORE: Preparing to initialize modules...\n" );
+	_resourceModule = new ResourceModule();
+	_resourceModule->initialize();
+	_physicsModule = new PhysicsModule();
+	_physicsModule->initialize();
+	//_renderModule = new RenderModule();
+	_renderModule = RenderModule::getInstance();
+	_renderModule->initialize( _resourceModule->getTexMan() );
+
+	_stateman = StateManager::getInstance();
+	_stateman->initialize( _renderModule, _resourceModule, _physicsModule, _window );
+
+	// initialize debug info
+
+	return true;
+}
+
+void System::run()
+{
+	printf( "CORE: Main timer starts.\n" );
+	_timer->start();
+	printf( "CORE: Begining to loop...\n" );
+
+	// debug info
+	//-----------------------------------------------
+	sf::Font font;
+	sf::Text str_fps;
+	font.loadFromFile("data/fonts/Elements.ttf");
+	str_fps.setCharacterSize(20);
+	str_fps.setFont(font);
+	str_fps.setColor(sf::Color::White);
+	str_fps.setPosition(10.0f,0.0f);
+	double frameStart = 0.0;
+	double fps = 60.0;
+	char debug_str[64];
+	//-----------------------------------------------
+
+	bool running = true;
+	_event = new sf::Event();
+
+	_renderModule->reshape( _window );
+	_stateman->changeState( _startState );
+
+	// loop them to hell
+	while( running )
+	{
+		//fps = EAGE::Math::getFPS();
+		frameStart = _timer->getElapsedMilliSec();
+		//frameStart = _timer->getElapsedMircoSec();
+
+		while( _window->pollEvent( *_event ) )
+		{
+			if( _event->type == sf::Event::Closed )			running = false;
+			else if( _event->type == sf::Event::Resized )	_renderModule->reshape( _window );
+		}
+
+		_renderModule->clearBuffers();
+		// state running zone
+		if( _isSplash )
+			_isSplash = _renderModule->renderSplash( (float)fps, _splashLength );
+		else
+			_stateman->run();
+
+		// debug info
+		//---------------------------------------------------------
+		sprintf_s( debug_str, "FPS: %.2f", fps );
+		str_fps.setString( debug_str );
+		_window->pushGLStates();
+			_window->draw( str_fps );
+		_window->popGLStates();
+		//---------------------------------------------------------
+
+		// update window
+		_window->display();
+
+		_frameInterval = _timer->getElapsedMilliSec() - frameStart;
+		fps = 1000.0/_frameInterval;
+		_renderModule->gether( (float)fps );
+		_physicsModule->setFPS( (float)fps );
+		//_physicsModule->setFPS( (float)EAGE::Math::getFPS() );
+	}
+
+	_stateman->end();
+
+	delete _event;
+	delete _window;
+	delete _timer;
+}
+
+
+void System::shutdown()
+{
+	_renderModule->shutdown();
+	_resourceModule->shutdown();
+	_physicsModule->shutdown();
+}
+
+void System::setCoreParams( CoreParams param )
+{
+	_params = param;
+	this->_writeCFG();
+}
+
+bool System::_initGL()
+{
+	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+	glClearDepth( 1.0f );
+	glEnable( GL_DEPTH_TEST );
+	glDepthFunc( GL_LEQUAL );
+	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
+
+	GLenum err = glewInit();
+	if( GLEW_OK != err )
+	{
+		printf( "CORE: Failed to initialize GLEW\n" );
+		return false;
+	}
+	printf( "CORE: GLEW initialized, version %s\n", glewGetString(GLEW_VERSION) );
+
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	glEnable( GL_TEXTURE_2D );
+
+	return true;
+}
+
+
+bool System::_readCFG()
+{
+	std::ifstream file;
+	file.open( _cfgPath );
+	if( file.fail() )
+	{
+		this->_writeCFG();
+		return false;
+	}
+
+	char key[32];
+
+	while( !file.eof() )
+	{
+		file >> key;
+		// core config
+		if( strcmp( key,"[CORE]" ) == 0 )
+		{
+			char param[32];
+			file >> param;
+
+			while( strcmp( param,"$" )!= 0 )
+			{
+				if( strcmp( param,"sTitle" ) == 0 )
+				{
+					file.get();
+					file.getline( _params.windowTitle, sizeof( _params.windowTitle ) );
+				}
+				if( strcmp( param,"iWidth" ) == 0 )			file >> _params.windowSize.x;
+				if( strcmp( param,"iHeight" ) == 0 )		file >> _params.windowSize.y;
+				if( strcmp( param,"bFullScreen" ) == 0 )	file >> _params.isFullScreen;
+				if( strcmp( param,"bVSync" ) == 0 )			file >> _params.isVSync;
+				file >> param;
+			}
+			continue;
+		}
+	}
+
+	return true;
+}
+
+bool System::_writeCFG()
+{
+	std::ofstream file;
+
+	file.open( _cfgPath );
+	if( file.fail() )		return false;
+
+	// output descriptions
+	file << "# MAIN CONFIG FILE FOR EAGE\n"
+		 << "# Don not miss the '$' symbol after each module.\n"
+		 << "#\n"
+		 << "# Header References:\n"
+		 << "# b - bool value\n"
+		 << "# i - integer value\n"
+		 << "# f - float value\n"
+		 << "# s - string value\n\n";
+
+	// output core params
+	file << "[CORE]\n"
+		 << "sTitle "		<< _params.windowTitle		<< std::endl
+		 << "iWidth "		<< _params.windowSize.x		<< std::endl
+		 << "iHeight "		<< _params.windowSize.y		<< std::endl
+		 << "bFullScreen "	<< _params.isFullScreen		<< std::endl
+		 << "bVSync "		<< _params.isVSync			<< std::endl
+		 << "$" << std::endl;
+
+	return true;
+}

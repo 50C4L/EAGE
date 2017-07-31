@@ -1,0 +1,129 @@
+#include "PlayState.h"
+#include <stdio.h>
+
+#define SPEED 400.0f
+
+enum
+{
+	DEFAULT_SHADER	= 0,
+	UNIFORM_TEST_SHADER,
+	TEXTURE_DISCARD_SHADER
+};
+
+PlayState* PlayState::_instance = 0;
+
+PlayState* PlayState::getInstance()
+{
+	if( !_instance )
+		_instance = new PlayState();
+
+	return _instance;
+}
+
+PlayState::PlayState()
+{
+	_player		= 0;
+	_obsticle	= 0;
+	_camera		= 0;
+}
+
+PlayState::~PlayState()
+{
+}
+
+void PlayState::enterFunc()
+{
+	this->loadResFile( "data/scenes/test.res" );
+
+	eage::loadShaderFromFile( "data/shaders/uniformTest.so", UNIFORM_TEST_SHADER );
+	eage::loadShaderFromFile( "data/shaders/TextureDiscarding.so", TEXTURE_DISCARD_SHADER );
+
+	// player initialization
+	_player = new Player();
+	_player->setSize( sf::Vector2f(100.0f,600.0f), sf::Vector2f(100.0f,500.0f), sf::Vector2f(200.0f,500.0f), sf::Vector2f(200.0f,600.0f) );
+	_player->setTexture( 4 );
+	_player->setLayer( 0.0 );
+	_player->setShader( TEXTURE_DISCARD_SHADER );
+	//_player->scaleAABB( 0.8f );
+	_player->addAnimation( "data/objects/animations/test.fba" );
+
+	// static object initialization
+	_obsticle = new VisibleObject();
+	_obsticle->setSize( sf::Vector2f(600.0f, 400.0f), sf::Vector2f(600.0f, 300.0f), sf::Vector2f(700.0f,300.0f), sf::Vector2f(700.0f,400.0f) );
+	_obsticle->setTexture( 2 );
+	_obsticle->setLayer( 0.0 );
+	_obsticle->setShader( 0 );
+
+	_camera = eage::getMainCamera();
+
+	this->addObject( _obsticle );
+	this->addFBAObject( _player );
+	this->setGravity( sf::Vector2f( 0.0f, 0.0f ) );
+
+	this->setRenderMode( EAGE_POST_EFFECT );
+	//this->setRenderMode( EAGE_WIREFRAME );
+	this->setPostFXShader( 1 );
+
+	eage::findShader( UNIFORM_TEST_SHADER )->uniform( "status", 0 );
+	float disColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	eage::findShader( TEXTURE_DISCARD_SHADER )->uniform( "disColor", 1, disColor );
+}
+
+void PlayState::leaveFunc()
+{
+	if( _player )
+	{
+		delete _player;
+		_player = 0;
+	}
+}
+
+void PlayState::control()
+{
+	// player control
+	if( eage::isKeyPressed( Right ) )
+	{
+		_player->move( sf::Vector2f(1.0,0.0), SPEED );
+	}
+	else if( eage::isKeyPressed( Left ) )
+	{
+		_player->move( sf::Vector2f(-1.0,0.0), SPEED );
+	}
+	else if( eage::isKeyPressed( Up ) )
+	{
+		_player->move( sf::Vector2f(0.0,1.0), SPEED );
+	}
+	else if( eage::isKeyPressed( Down ) )
+	{
+		_player->move( sf::Vector2f(0.0,-1.0), SPEED );
+	}
+	else
+	{
+		_player->stop();
+	}
+
+	// camera control
+	if( eage::isKeyPressed( W ) )
+	{
+		_camera->pan( sf::Vector2f(0.0,1.0) );
+	}
+	else if( eage::isKeyPressed( S ) )
+	{
+		_camera->pan( sf::Vector2f(0.0,-1.0) );
+	}
+	else if( eage::isKeyPressed( A ) )
+	{
+		_camera->pan( sf::Vector2f(-1.0,0.0) );
+	}
+	else if( eage::isKeyPressed( D ) )
+	{
+		_camera->pan( sf::Vector2f(1.0,0.0) );
+	}
+
+	_player->playAnimation( 0 );
+
+	if( eage::isCollidedAABB( _player, _obsticle ) )
+		_player->react();
+
+	//_camera->follow( _player->getCentre() );
+}

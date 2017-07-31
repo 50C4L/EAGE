@@ -1,0 +1,223 @@
+#include "TextureManager.h"
+#include <stdio.h>
+
+// Global definition
+#define DEFAULT_TEX 0
+
+// TextureTask definitions
+TextureTask::TextureTask( const void* data, std::size_t size, int texid, GLint filter )
+{
+	_data = data;
+	_size = size;
+	_texId = texid;
+	_filter = filter;
+}
+
+
+bool TextureTask::run()
+{
+	return TextureManager::getInstance()->loadFromMemory( _data, _size, _texId, _filter );
+}
+
+
+//-------------------------------------------------------------------
+// TextureManager definitions
+TextureManager* TextureManager::_instance = NULL;
+
+TextureManager::TextureManager()
+{
+	_texTaskMan = new TaskManager();
+}
+
+TextureManager::~TextureManager()
+{
+	if( !_texList.empty() )
+		this->clear();
+
+	delete _texTaskMan;
+}
+
+TextureManager* TextureManager::getInstance()
+{
+	if( !_instance )	_instance = new TextureManager();
+	return _instance;
+}
+
+void TextureManager::rebuild()
+{
+	eage::debug( "Texture Manager: Creating default texture...\n" );
+	if( _texList.empty() )
+	{
+		int i,j,c;
+		unsigned char *checker;
+
+		checker = new unsigned char[64*64*4];
+		for( i = 0; i< 64; i++ )
+		{
+			for( j = 0; j < 64; j++ )
+			{
+				c = ( !(i&8)^!(j&8) ) * 255;
+
+				checker[ (i*256) + (j*4) + 0 ] = (unsigned char)c;
+				checker[ (i*256) + (j*4) + 1 ] = (unsigned char)c;
+				checker[ (i*256) + (j*4) + 2 ] = (unsigned char)c;
+				checker[ (i*256) + (j*4) + 3 ] = (unsigned char)255;
+			}
+		}
+
+		GLuint id;
+		glGenTextures( 1, &id );
+		glBindTexture( GL_TEXTURE_2D, id );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16, 64, 64, 0, GL_RGBA, GL_UNSIGNED_BYTE, checker );
+		glBindTexture( GL_TEXTURE_2D, 0 );
+
+		delete [] checker;
+
+		_texList.insert( std::pair<int, GLuint>( DEFAULT_TEX, id ) );
+	}
+}
+
+
+void TextureManager::executeTasks()
+{
+	_texTaskMan->begin();
+}
+
+
+void TextureManager::appendTexTask( TextureTask* task )
+{
+	_texTaskMan->appendTask( task );
+}
+
+
+bool TextureManager::loadFromFile( std::string filename, int texid, GLint filter )
+{
+	if( filename.empty() )
+	{
+		eage::debug( "Texture Manager: Invalid file path.\n" );
+		return false;
+	}
+
+	sf::Image image;
+	if( !image.loadFromFile( filename ) )
+	{
+		eage::debug( "Texture Manager: Failed to load texture from %s\n", filename.c_str() );
+		return false;
+	}
+
+	if( _texList.find( texid ) != _texList.end() )
+		glDeleteTextures( 1, &(_texList[texid]) );
+
+	// flip
+	image.flipVertically();
+
+	GLuint id;
+	glGenTextures( 1, &id );
+	_texList[texid] = id;
+	eage::debug( "Texture Manager: Texture '%d' has been loaded.\n", texid );
+
+	glBindTexture( GL_TEXTURE_2D, id );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16, image.getSize().x, image.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getPixelsPtr() );
+
+	glBindTexture( GL_TEXTURE_2D, 0 );
+	return true;
+}
+
+bool TextureManager::loadFromMemory( const void* data, std::size_t size, int texid, GLint filter )
+{
+	if( data )
+	{
+		sf::Image image;
+		if( !image.loadFromMemory( data, size ) )
+		{
+			eage::debug( "Texture Manager: Failed to load texture [%d] from memory\n", texid );
+			return false;
+		}
+
+		image.flipVertically();
+
+		// if texture id exists
+		if( _texList.find( texid ) != _texList.end() )
+			glDeleteTextures( 1, &(_texList[texid]) );
+
+		GLuint glTexid;
+		glGenTextures( 1, &glTexid );
+		_texList[texid] = glTexid;
+		eage::debug( "Texture Manager: Texture '%d' has been loaded.\n", texid );
+
+		glBindTexture( GL_TEXTURE_2D, glTexid );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16, image.getSize().x, image.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getPixelsPtr() );
+		glBindTexture( GL_TEXTURE_2D, 0 );
+
+		return true;
+	}
+	return false;
+}
+
+bool TextureManager::unload( int texid )
+{
+	// if the texture is mapped
+	if( _texList.find( texid ) != _texList.end() )
+	{
+		glDeleteTextures( 1, &_texList[texid] );
+		eage::debug( "Texture Manager: Texture '%d' has been unloaded.\n", texid );
+		return true;
+	}
+	else
+		return false;
+}
+
+void TextureManager::bind( int texid )
+{
+	// if the texture is mapped
+	if( _texList.find( texid ) != _texList.end() )
+	{
+		glBindTexture( GL_TEXTURE_2D, _texList[texid] );
+	}
+	else
+	{
+		glBindTexture( GL_TEXTURE_2D, _texList[DEFAULT_TEX] );
+	}
+}
+
+void TextureManager::unbind()
+{
+	glBindTexture( GL_TEXTURE_2D, 0 );
+}
+
+void TextureManager::clear()
+{
+	if( !_texList.empty() )
+	{
+		std::map< int, GLuint >::iterator i = _texList.begin();
+
+		while( i != _texList.end() )
+		{
+			this->unload( i->first );
+			++i;
+		}
+
+		_texList.clear();
+	}
+
+	_texTaskMan->clear();
+}
+
+int TextureManager::getCount()
+{
+	if( _texList.empty() )	return 0;
+	return (int)_texList.size();
+}

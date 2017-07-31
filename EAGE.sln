@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAGE", "Box.vcxproj", "{271700AE-1E80-46B2-A88A-2264F5C7E082}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EAGE_Test", "EAGE_Test\EAGE_Test.vcxproj", "{885971B6-07D4-4834-B978-1ABAAEA8A085}"
+	ProjectSection(ProjectDependencies) = postProject
+		{271700AE-1E80-46B2-A88A-2264F5C7E082} = {271700AE-1E80-46B2-A88A-2264F5C7E082}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{271700AE-1E80-46B2-A88A-2264F5C7E082}.Debug|Win32.ActiveCfg = Debug|Win32
+		{271700AE-1E80-46B2-A88A-2264F5C7E082}.Debug|Win32.Build.0 = Debug|Win32
+		{271700AE-1E80-46B2-A88A-2264F5C7E082}.Release|Win32.ActiveCfg = Release|Win32
+		{271700AE-1E80-46B2-A88A-2264F5C7E082}.Release|Win32.Build.0 = Release|Win32
+		{885971B6-07D4-4834-B978-1ABAAEA8A085}.Debug|Win32.ActiveCfg = Debug|Win32
+		{885971B6-07D4-4834-B978-1ABAAEA8A085}.Debug|Win32.Build.0 = Debug|Win32
+		{885971B6-07D4-4834-B978-1ABAAEA8A085}.Release|Win32.ActiveCfg = Release|Win32
+		{885971B6-07D4-4834-B978-1ABAAEA8A085}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		VisualSVNWorkingCopyRoot = .
+	EndGlobalSection
+EndGlobal

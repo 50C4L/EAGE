@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\src">
+      <UniqueIdentifier>{1fb5ecf0-2c89-423f-af29-c6b28a7ec6f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\core">
+      <UniqueIdentifier>{16b6da83-3f58-4571-9db0-32411865ccad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\helper">
+      <UniqueIdentifier>{a623a147-3fa6-4d9c-9474-644da8333905}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\manager">
+      <UniqueIdentifier>{5e002ef5-fcdd-4982-8fc7-8da140f7947e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\graphics">
+      <UniqueIdentifier>{c287216a-4936-4462-9bb0-343e0782b6fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\resource">
+      <UniqueIdentifier>{d360bf5a-3edb-4c90-aca1-5cad90675a49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\UI">
+      <UniqueIdentifier>{59108f99-e807-4d08-9004-9486a5adc7cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\math">
+      <UniqueIdentifier>{76c9eec6-c2e7-4d82-9b7c-6df22aca7d97}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\manager\TextureManager.cpp">
+      <Filter>Source Files\src\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\Module.cpp">
+      <Filter>Source Files\src\helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\RenderModule.cpp">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\manager\StateManager.cpp">
+      <Filter>Source Files\src\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\State.cpp">
+      <Filter>Source Files\src\helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\Timer.cpp">
+      <Filter>Source Files\src\helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\manager\FontManager.cpp">
+      <Filter>Source Files\src\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\resource\ResourceModule.cpp">
+      <Filter>Source Files\src\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\UIObject.cpp">
+      <Filter>Source Files\src\helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\AABB.cpp">
+      <Filter>Source Files\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Button.cpp">
+      <Filter>Source Files\src\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\manager\UIObjectManager.cpp">
+      <Filter>Source Files\src\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\System.cpp">
+      <Filter>Source Files\src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\FBAnimObject.cpp">
+      <Filter>Source Files\src\helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\manager\AnimationManager.cpp">
+      <Filter>Source Files\src\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\PhysicsModule.cpp">
+      <Filter>Source Files\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\math.cpp">
+      <Filter>Source Files\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\BSphere.cpp">
+      <Filter>Source Files\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\ShaderObject.cpp">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\manager\ShaderManager.cpp">
+      <Filter>Source Files\src\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\FrameBufferObject.cpp">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\input.cpp">
+      <Filter>Source Files\src\helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\Camera.cpp">
+      <Filter>Source Files\src\helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\manager\AudioManager.cpp">
+      <Filter>Source Files\src\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Label.cpp">
+      <Filter>Source Files\src\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\EFont.cpp">
+      <Filter>Source Files\src\helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Environment.cpp">
+      <Filter>Source Files\src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\ParticleFX.cpp">
+      <Filter>Source Files\src\helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\Layer.cpp">
+      <Filter>Source Files\src\helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\GameObject.cpp">
+      <Filter>Source Files\src\helper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\ShaderBlock.cpp">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\manager\ShaderBlocktManager.cpp">
+      <Filter>Source Files\src\manager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\RenderList.cpp">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\helper\OpenGL.h">
+      <Filter>Source Files\src\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\manager\TextureManager.h">
+      <Filter>Source Files\src\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\RenderModule.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\Module.h">
+      <Filter>Source Files\src\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\manager\StateManager.h">
+      <Filter>Source Files\src\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\Timer.h">
+      <Filter>Source Files\src\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\manager\FontManager.h">
+      <Filter>Source Files\src\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\resource\ResourceModule.h">
+      <Filter>Source Files\src\resource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\manager\UIObjectManager.h">
+      <Filter>Source Files\src\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\System.h">
+      <Filter>Source Files\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\manager\AnimationManager.h">
+      <Filter>Source Files\src\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\PhysicsModule.h">
+      <Filter>Source Files\src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\ShaderObject.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\manager\ShaderManager.h">
+      <Filter>Source Files\src\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\FrameBufferObject.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EAGE.h">
+      <Filter>Source Files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\helper.h">
+      <Filter>Source Files\src\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\manager\AudioManager.h">
+      <Filter>Source Files\src\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\helper\EFont.h">
+      <Filter>Source Files\src\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Environment.h">
+      <Filter>Source Files\src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\ShaderBlock.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\manager\ShaderBlockManager.h">
+      <Filter>Source Files\src\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\RenderList.h">
+      <Filter>Source Files\src\graphics</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

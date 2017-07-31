@@ -1,0 +1,41 @@
+#ifndef _SHADEROBJECT_H
+#define _SHADEROBJECT_H
+
+#include <string>
+#include <SFML/System.hpp>
+#include "../helper/helper.h"
+
+
+class ShaderObject
+{
+public:
+	ShaderObject();
+	~ShaderObject();
+
+	bool	loadShader( std::string filename );
+	
+	void	activate();
+	void	destroy();
+	GLuint	getProgramId();
+
+	// uniform functions
+	// ints
+	void uniform( const char* name, int v0 );
+	void uniform( const char* name, sf::Vector2i v );
+	void uniform( const char* name, sf::Vector3i v );
+	void uniform( const char* name, int count, int* v );
+
+	// floats
+	void uniform( const char* name, float v0 );
+	void uniform( const char* name, sf::Vector2f v );
+	void uniform( const char* name, sf::Vector3f v );
+	void uniform( const char* name, int count, float* v );
+
+private:
+	void _printInfoLog( GLuint obj );
+
+	GLuint	_vert, _frag, _prog;
+	bool	_vertCom, _fragCom, _progCom;
+};
+
+#endif

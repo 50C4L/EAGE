@@ -1,0 +1,59 @@
+#include "RenderList.h"
+#include "../helper/helper.h"
+#include <stdio.h>
+
+#include "../manager/TextureManager.h"
+
+RenderList::RenderList()
+{
+}
+
+RenderList::~RenderList()
+{
+}
+
+void RenderList::setName( std::string name )
+{
+	_name = name;
+}
+
+void RenderList::setID( int id )
+{
+	_id = id;
+}
+
+void RenderList::push( VisibleObject* obj )
+{
+	if( obj )	_objList.push_back( obj );
+}
+
+void RenderList::render( TextureManager* tm )
+{
+	if( _objList.empty() )	return;
+	_listIt it;
+	it = _objList.begin();
+	while( it != _objList.end() )
+	{
+		tm->bind( (*it)->getTexture() );
+		(*it)->render();
+		++it;
+	}
+}
+
+void RenderList::clear()
+{
+	_name.clear();
+	_objList.clear();
+}
+
+std::string RenderList::getName()
+{
+	if( !_name.empty() )
+		return _name;
+	return 0;
+}
+
+int RenderList::getID()
+{
+	return _id;
+}

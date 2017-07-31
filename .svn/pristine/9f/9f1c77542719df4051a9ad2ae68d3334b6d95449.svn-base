@@ -1,0 +1,29 @@
+#ifndef _RENDERLISTMANAGER_H
+#define _RENDERLISTMANAGER_H
+
+#include "../graphics/RenderList.h"
+#include "TextureManager.h"
+#include "ShaderManager.h"
+
+class RenderListManager
+{
+public:
+								~RenderListManager();
+	static RenderListManager*	getInstanc();
+	int							genLists( ShaderManager* _smPtr, TextureManager* _tmPtr );
+	void						appendObject( VisibleObject* obj );
+	void						renderAll();
+	void						clearAll();
+
+private:
+								RenderListManager();
+
+	static RenderListManager*	_instance;
+	int							_listCounts;
+	RenderList*					_lists;
+	TextureManager*				_texManPtr;
+	ShaderManager*				_shaManPtr;
+
+};	// class RenderListManager
+
+#endif

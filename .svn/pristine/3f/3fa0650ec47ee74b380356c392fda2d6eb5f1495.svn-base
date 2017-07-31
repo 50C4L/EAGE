@@ -1,0 +1,249 @@
+//#include "VisibleObject.h"
+#include "../helper/helper.h"
+#include "OpenGL.h"
+
+// Friendly functions
+bool eage::isCollidedAABB( VisibleObject* obj1, VisibleObject* obj2 )
+{
+	return obj1->_physxBody.aabb.isCollide( obj2->_physxBody.aabb );
+}
+
+bool eage::isCollidedAABB( VisibleObject* obj, sf::Vector2f vec )
+{
+	return obj->_physxBody.aabb.isCollide( vec );
+}
+
+bool eage::isCollidedBS( VisibleObject* obj1, VisibleObject* obj2 )
+{
+	return obj1->_physxBody.bsphere.isCollide( obj2->_physxBody.bsphere );
+}
+
+bool eage::isCollidedBS( VisibleObject* obj, sf::Vector2f vec )
+{
+	return obj->_physxBody.bsphere.isCollide( vec );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+VisibleObject::VisibleObject()
+{
+	_texid				= 0;
+	_shaid				= 0;
+	_uv.leftTop.x		= 0.0f;	_uv.leftTop.y		= 1.0f;
+	_uv.leftBottom.x	= 0.0f;	_uv.leftBottom.y	= 0.0f;
+	_uv.rightBottom.x	= 1.0f;	_uv.rightBottom.y	= 0.0f;
+	_uv.rightTop.x		= 1.0f;	_uv.rightTop.y		= 1.0f;
+	_layer = 0.0f;
+	_physxBody.mass			= 1.0f;
+	_physxBody.inertia		= 1.0f;
+	_physxBody.currentSpeed	= 0.0f;
+	_physxBody.maxSpeed		= 1000.0f;
+	_physxBody.radius		= 0.0f;
+	_physxBody.IsDynamic	= true;
+}
+
+VisibleObject::~VisibleObject()
+{
+}
+
+void VisibleObject::scaleAABB( float value )
+{
+	_physxBody.aabb.scale( value );
+}
+
+void VisibleObject::setTexture( int id )
+{
+	_texid = id;
+}
+
+void VisibleObject::setShader( int id )
+{
+	_shaid = id;
+}
+
+void VisibleObject::setSize( sf::Vector2f leftTop, sf::Vector2f leftBottom, sf::Vector2f rightBottom, sf::Vector2f rightTop )
+{
+	_LT = leftTop;
+	_LB = leftBottom;
+	_RB = rightBottom;
+	_RT = rightTop;
+	_CT = (_RT - _LB)/2.0f + _LB;
+
+	// create bounding object
+	this->_createAABB();
+	this->_createBSphere();
+}
+
+void VisibleObject::setUV( VO_uvCoordinate uvs )
+{
+	_uv = uvs;
+}
+
+void VisibleObject::setLayer( float layer )
+{
+	_layer = layer;
+}
+
+void VisibleObject::setTranslate( float x, float y )
+{
+	_transform.translate( x, y );
+	_LT = _transform * _LT;
+	_LB = _transform * _LB;
+	_RB = _transform * _RB;
+	_RT = _transform * _RT;
+	_physxBody.aabb.translate( sf::Vector2f(x,y) );
+	_CT = (_RT - _LB)/2.0f + _LB;
+	this->setIdentity();
+}
+
+void VisibleObject::setTranslate( sf::Vector2f pos )
+{
+	_transform.translate( pos );
+	_LT = _transform * _LT;
+	_LB = _transform * _LB;
+	_RB = _transform * _RB;
+	_RT = _transform * _RT;
+	_physxBody.aabb.translate( pos );
+	_CT = (_RT - _LB)/2.0f + _LB;
+	this->setIdentity();
+}
+
+void VisibleObject::setRotate( float angle )
+{
+	_transform.rotate( angle );
+	_LT = _transform * _LT;
+	_LB = _transform * _LB;
+	_RB = _transform * _RB;
+	_RT = _transform * _RT;
+	this->setIdentity();
+}
+
+void VisibleObject::setRotate( float angle, sf::Vector2f point )
+{
+	_transform.rotate( angle, point );
+	_LT = _transform * _LT;
+	_LB = _transform * _LB;
+	_RB = _transform * _RB;
+	_RT = _transform * _RT;
+	this->setIdentity();
+}
+
+void VisibleObject::setIdentity()
+{
+	_transform = sf::Transform::Identity;
+}
+
+void VisibleObject::render()
+{
+	GLfloat vertices[12] = 
+	{
+		_LT.x, _LT.y, _layer, _LB.x, _LB.y, _layer,
+		_RB.x, _RB.y, _layer, _RT.x, _RT.y, _layer
+	};
+	GLfloat	texcoords[8] =
+	{
+		_uv.leftTop.x,		_uv.leftTop.y,
+		_uv.leftBottom.x,	_uv.leftBottom.y,
+		_uv.rightBottom.x,	_uv.rightBottom.y,
+		_uv.rightTop.x,		_uv.rightTop.y
+	};
+	GLubyte indices[ 6 ] = 
+	{
+		0,1,2,2,3,0
+	};
+
+	glVertexPointer( 3, GL_FLOAT, 0, vertices );
+	glTexCoordPointer( 2, GL_FLOAT, 0, texcoords );
+	glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, indices );
+}
+
+int VisibleObject::getTexture()
+{
+	return _texid;
+}
+
+int VisibleObject::getShader()
+{
+	return _shaid;
+}
+
+void VisibleObject::getVertices( sf::Vector2f &lt, sf::Vector2f &lb, sf::Vector2f &rb, sf::Vector2f &rt )
+{
+	lt = _LT; lb = _LB; rb = _RB; rt = _RT;
+}
+
+sf::Vector2f VisibleObject::getCentre()
+{
+	return _CT;
+}
+
+sf::Vector2f VisibleObject::getHistory()
+{
+	return _physxBody.history;
+}
+
+void VisibleObject::setMass( float value )
+{
+	_physxBody.mass = value;
+}
+
+void VisibleObject::setAcceleration( sf::Vector2f vector )
+{
+	_physxBody.acceleration = vector;
+}
+
+void VisibleObject::setUniform( sf::Vector2f vector )
+{
+	_physxBody.uniform = vector;
+}
+
+void VisibleObject::setInertia( float value )
+{
+	_physxBody.inertia = value;
+}
+
+void VisibleObject::setRadius( float value )
+{
+	_physxBody.radius = value;
+}
+
+void VisibleObject::setCurrentSpeed( float value )
+{
+	_physxBody.currentSpeed = value;
+}
+
+void VisibleObject::setMaxSpeed( float value )
+{
+	_physxBody.maxSpeed = value;
+}
+
+void VisibleObject::_createAABB()
+{
+	sf::Vector2f lt,lb,rb,rt;
+	this->getVertices( lt, lb, rb, rt );
+	_physxBody.aabb.addVertex( lt );
+	_physxBody.aabb.addVertex( lb );
+	_physxBody.aabb.addVertex( rb );
+	_physxBody.aabb.addVertex( rt );
+}
+
+void VisibleObject::_createBSphere()
+{
+	_physxBody.bsphere.create( _CT, _physxBody.radius );
+}
+
+bool VisibleObject::isInsertAABB( sf::Vector2f p )
+{
+	if( _physxBody.aabb.isCollide( p ) )
+		return true;
+	else 
+		return false;
+}
+
+bool VisibleObject::isInsertBSphere( sf::Vector2f p )
+{
+	if( _physxBody.bsphere.isCollide( p ) )
+		return true;
+	else
+		return false;
+}

@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\game">
+      <UniqueIdentifier>{79be5a26-6fa4-480f-81b9-d5e0acd5b04c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game\ParticleTestScene">
+      <UniqueIdentifier>{dea5fa1b-006f-4b20-9fff-398ff39c075d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game\PlayerTestScene">
+      <UniqueIdentifier>{cc617c1c-a9e6-4237-b17d-7b3c2c5686a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game\MenuTestScene">
+      <UniqueIdentifier>{ea9ba175-9163-4d53-97b0-88ae75741ff4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game\SkeletonTestScene">
+      <UniqueIdentifier>{4a340277-5ad4-4c18-83aa-20f50e0ec5c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game\PhysicsTestScene">
+      <UniqueIdentifier>{f4c58384-6c1f-40cd-bd42-7ddb7c4b8d02}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\ParticleState.cpp">
+      <Filter>Source Files\game\ParticleTestScene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\player.cpp">
+      <Filter>Source Files\game\PlayerTestScene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\PlayState.cpp">
+      <Filter>Source Files\game\PlayerTestScene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\MenuState.cpp">
+      <Filter>Source Files\game\MenuTestScene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\LineEmitter.cpp">
+      <Filter>Source Files\game\ParticleTestScene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\SkeletonState.cpp">
+      <Filter>Source Files\game\SkeletonTestScene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\PhyxState.cpp">
+      <Filter>Source Files\game\PhysicsTestScene</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\game\ParticleState.h">
+      <Filter>Source Files\game\ParticleTestScene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game\player.h">
+      <Filter>Source Files\game\PlayerTestScene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game\PlayState.h">
+      <Filter>Source Files\game\PlayerTestScene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game\MenuState.h">
+      <Filter>Source Files\game\MenuTestScene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game\LineEmitter.h">
+      <Filter>Source Files\game\ParticleTestScene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game\SkeletonState.h">
+      <Filter>Source Files\game\SkeletonTestScene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game\PhyxState.h">
+      <Filter>Source Files\game\PhysicsTestScene</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

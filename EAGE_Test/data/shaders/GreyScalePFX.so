@@ -1,0 +1,16 @@
+#ifndef VERTEX
+void main()
+{
+	gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
+	gl_Position = ftransform();
+}
+#endif
+#ifndef FRAGMENT
+uniform sampler2D rt;
+void main()
+{
+	vec4 color = texture2D( rt, gl_TexCoord[0].st );
+	float grey = dot( color.rgb, vec3(0.299, 0.587, 0.114));
+	gl_FragColor = vec4( grey, grey, grey, color.a);
+}
+#endif

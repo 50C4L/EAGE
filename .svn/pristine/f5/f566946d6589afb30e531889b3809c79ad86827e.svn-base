@@ -1,0 +1,137 @@
+#include "ShaderBlock.h"
+#include <stdio.h>
+
+#include "../manager/TextureManager.h"
+
+ShaderBlock::ShaderBlock()
+{
+	_id = -1;
+}
+
+ShaderBlock::~ShaderBlock()
+{
+}
+
+void ShaderBlock::setName( std::string name )
+{
+	_name = name;
+}
+
+void ShaderBlock::genRenderList()
+{
+	_listCount = TextureManager::getInstance()->getCount();
+	_lists = new RenderList[ _listCount ];
+	printf( "ShaderBlock [%d]: Preparing to generate %d render lists.\n", _id, _listCount );
+
+	TextureManager::_mapIt it = TextureManager::getInstance()->_texList.begin();
+
+	for( int i = 0; i < _listCount; i++ )
+	{
+		if( it == TextureManager::getInstance()->_texList.end() )
+			break;
+		_lists[i].setId( it->first );
+		++it;
+	}
+}
+
+void ShaderBlock::setID( int id )
+{
+	_id = id;
+}
+
+void ShaderBlock::push( GameObject* obj )
+{
+	//_objList.push_back( obj );
+	int id = obj->getTexture();
+	for( int i = 0; i < _listCount; ++i )
+	{
+		if( _lists[i].getId() == id )
+		{
+			_lists[i].push( obj );
+			obj->_renderList = i;
+			break;
+		}
+		else if( i == (_listCount - 1) )
+		{
+			_lists[0].push( obj );
+			break;
+		}
+	}
+}
+
+void ShaderBlock::render()
+{
+	//TextureManager* texman;
+	//texman = TextureManager::getInstance();
+	//if( _objList.empty() )	return;
+	//_listIt it;
+	//it = _objList.begin();
+	//while( it != _objList.end() )
+	//{
+	//	if( *it && (*it)->isEnable() )
+	//	{
+	//		texman->bind( (*it)->getTexture() );
+	//		//(*it)->render();
+	//		glVertexPointer( 3, GL_FLOAT, 0, (*it)->_vertices.data() );
+	//		glTexCoordPointer( 2, GL_FLOAT, 0, (*it)->_texcoords.data() );
+	//		glDrawArrays( GL_TRIANGLES, 0, 6 );
+	//	}
+	//	++it;
+	//}
+	//TextureManager::getInstance()->bind( 0 );
+	//std::for_each( _objList.begin(), _objList.end(), Renderer() );
+	int i = 0;
+	while( i < _listCount )
+	{
+		_lists[i].render();
+		++i;
+	}
+}
+
+void ShaderBlock::clear()
+{
+	_name.clear();
+	int i = 0;
+	while( i < _listCount )
+	{
+		_lists[i].clear();
+		++i;
+	}
+
+	/*if( !_objList.empty() )
+	{
+		std::for_each( _objList.begin(), _objList.end(), Deallocator() );
+		_objList.clear();
+	}*/
+}
+
+void ShaderBlock::sort()
+{
+	//if( !_objList.empty() )
+	//	//std::sort( _objList.begin(), _objList.end(), this->_lessLayer );
+	//	_objList.sort( LessLayer() );
+	int i = 0;
+	while( i < _listCount )
+	{
+		_lists[i].sort();
+		++i;
+	}
+}
+
+std::string ShaderBlock::getName()
+{
+	if( !_name.empty() )
+		return _name;
+	return 0;
+}
+
+int ShaderBlock::getID()
+{
+	return _id;
+}
+
+
+//bool ShaderBlock::_lessLayer( const GameObject *obj1, const GameObject *obj2 )
+//{
+//	return obj1->getLayer() < obj2->getLayer();
+//}

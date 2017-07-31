@@ -1,0 +1,126 @@
+#include "ResourceModule.h"
+#include <fstream>
+
+
+ResourceModule::ResourceModule()
+{
+	_texman		= 0;
+	_fontman	= 0;
+}
+
+
+ResourceModule::~ResourceModule()
+{
+}
+
+
+bool ResourceModule::initialize()
+{
+	printf( "Resource Module: Instancing texture manager...\n" );
+	_texman = TextureManager::getInstance();
+	printf( "Resource Module: Instancing font manager...\n" );
+	_fontman = FontManager::getInstance();
+
+	return true;
+}
+
+bool ResourceModule::loadResFile( std::string filename )
+{
+	printf( "Resource Module: Prepare to load *.res file [%s]\n", filename.c_str() );
+	// if the *.res file is valid
+	std::ifstream file;
+	file.open( filename );
+	if( file.fail() )	return false;
+
+	char key[MAX_RESOURCE_NAME];
+
+	while( !file.eof() )
+	{
+		file >> key;
+		if( strcmp( key, "[FONTS]" ) == 0 )
+		{
+			// get the number of fonts
+			int fontNum;
+			file >> fontNum;
+			_fontman->create( fontNum );
+
+			// get params
+			char name[MAX_RESOURCE_NAME];
+			char path[256];
+			while(1)
+			{
+				// resource name
+				file >> name;
+				if( strcmp( name, "$" ) == 0 ) break;
+				// resource path
+				file.get();
+				file.getline( path, sizeof( path ) );
+				if( strcmp( path, "$" ) == 0 ) break;
+
+				_fontman->loadFromFile( path, atoi(name) );
+			}
+			continue;
+		}
+		else if( strcmp( key, "[SAMPLE]" ) == 0 )
+		{
+			char name[MAX_RESOURCE_NAME];
+			char path[256];
+			char filter[16];
+			while(1)
+			{
+				// texture name
+				file >> name;
+				if( strcmp( name, "$" ) == 0 ) break;
+				// texture path
+				file >> path;
+				if( strcmp( path, "$" ) == 0 ) break;
+				// texture filter
+				file >> filter;
+				if( strcmp( path, "$" ) == 0 ) break;
+
+				if( strcmp( filter, "LINEAR" ) == 0 )
+					_texman->loadFromFile( path, atoi(name), GL_LINEAR );
+				else if( ( strcmp( filter, "NEAREST" ) == 0 ) )
+					_texman->loadFromFile( path, atoi(name), GL_NEAREST );
+			}
+			continue;
+		}
+	}
+
+	return true;
+}
+
+void ResourceModule::create()
+{
+	_texman->rebuild();
+}
+
+void ResourceModule::shutdown()
+{
+	if( _texman )
+	{
+		delete _texman;
+		_texman = 0;
+	}
+	if( _fontman )
+	{
+		delete _fontman;
+		_fontman = 0;
+	}
+}
+
+void ResourceModule::clear()
+{
+	_texman->clear();
+	_fontman->clear();
+}
+
+TextureManager* ResourceModule::getTexMan()
+{
+	return _texman;
+}
+
+FontManager* ResourceModule::getFontMan()
+{
+	return _fontman;
+}

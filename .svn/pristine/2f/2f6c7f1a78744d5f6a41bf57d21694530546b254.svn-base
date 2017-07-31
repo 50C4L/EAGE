@@ -1,0 +1,125 @@
+#include "ShaderManager.h"
+#include "../helper/OpenGL.h"
+#include <stdio.h>
+
+// Friendly functions
+
+void eage::loadShaderFromFile( std::string filename, int shaderId )
+{
+	ShaderManager::_instance->loadFromFile( filename, shaderId );
+}
+
+ShaderObject* eage::findShader( int shaderId )
+{
+	return ShaderManager::_instance->find( shaderId );
+}
+
+//======================================================================================
+
+
+
+
+#define DEFAULT_SHADER 0
+
+ShaderManager* ShaderManager::_instance = 0;
+
+ShaderManager* ShaderManager::getInstance()
+{
+	if( !_instance )	_instance = new ShaderManager();
+	return _instance;
+}
+
+ShaderManager::ShaderManager()
+{
+	// load default shader
+	//if( !this->rebuild() )
+		//printf( "<ERROR> Shader Manager: Failed to load default shader.\n" );
+}
+
+ShaderManager::~ShaderManager()
+{
+}
+
+bool ShaderManager::rebuild()
+{
+	return this->loadFromFile( "data/shaders/basicTexture.so", DEFAULT_SHADER );
+}
+
+
+bool ShaderManager::loadFromFile( std::string filename, int shaderId )
+{
+	if( filename.empty() )
+	{
+		printf( "Shader Manager: Invalid file path\n" );
+		return false;
+	}
+
+	ShaderObject* obj;
+	obj = new ShaderObject;
+	if( !obj->loadShader( filename ) )
+	{
+		printf( "<ERROR> Shader Manager: Failed to load shader object.\n" );
+		return false;
+	}
+
+	_shaderList[shaderId] = *obj;
+	printf( "Shader Manager: Shader '%d' has been loaded.\n", shaderId );
+	delete obj;
+
+	return true;
+}
+
+void ShaderManager::bind( int shaderId )
+{
+	if( _shaderList.find( shaderId ) != _shaderList.end() )
+		_shaderList[shaderId].activate();
+	else
+		_shaderList[DEFAULT_SHADER].activate();
+}
+
+ShaderObject* ShaderManager::find( int shaderId )
+{
+	// return pointer to the shader
+	if( _shaderList.find( shaderId ) != _shaderList.end() )
+		return &_shaderList[shaderId];
+	else
+		return 0;
+}
+
+void ShaderManager::disable()
+{
+	glUseProgramObjectARB( 0 );
+}
+
+bool ShaderManager::release( int shaderId )
+{
+	if( _shaderList.find( shaderId) != _shaderList.end() )
+	{
+		_shaderList[shaderId].destroy();
+		printf( "Shader Manager: Shader '%d' has been released.\n", shaderId );
+		return true;
+	}
+	else
+		return false;
+}
+
+void ShaderManager::clear()
+{
+	if( !_shaderList.empty() )
+	{
+		std::map<int,ShaderObject>::iterator i = _shaderList.begin();
+
+		while( i != _shaderList.end() )
+		{
+			if( !this->release( i->first ) )
+			{
+				printf( "<ERROR> Shader Manager: Failed to release shader '%d'.\n", i->first );
+				return;
+			}
+			++i;
+		}
+
+		_shaderList.clear();
+	}
+}
+

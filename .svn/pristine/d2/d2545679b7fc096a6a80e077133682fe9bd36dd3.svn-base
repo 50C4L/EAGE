@@ -1,0 +1,31 @@
+#ifndef _FONTMANAGER_H
+#define _FONTMANAGER_H
+
+#include <SFML\Graphics\Font.hpp>
+#include <string>
+#include <map>
+
+class FontManager
+{
+	//friend class UIObject;
+public:
+						~FontManager();
+	static FontManager* getInstance();
+
+	void				create( int num );
+	void				clear();
+	bool				loadFromFile( std::string filename, int id );
+	sf::Font*			getFont( int id );
+
+private:
+	FontManager();
+
+	static FontManager*				_instance;
+	sf::Font*						_fontMem;
+	std::map<int,sf::Font*>			_fontList;
+	int								_num;
+	int								_index;
+
+};	// class FontManager
+
+#endif

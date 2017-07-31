@@ -1,0 +1,59 @@
+#ifndef _RENDERMODULE_H
+#define _RENDERMODULE_H
+
+#include "../helper/Module.h"
+#include "../helper/helper.h"
+#include "../manager/RenderListManager.h"
+#include "../manager/UIObjectManager.h"
+#include "../manager/AnimationManager.h"
+
+class TextureManager;
+class ShaderManager;
+class VisibleObject;
+class ShaderObject;
+class FrameBufferObject;
+
+
+class RenderModule:public Module
+{
+public:
+	RenderModule( TextureManager* tmPtr );
+	~RenderModule();
+
+	bool initialize();
+	void create();
+	void shutdown();
+	void addObj( VisibleObject* obj );
+	void addUIObject( UIObject* obj );
+	void addFBAnimObject( FBAnimObject* obj );
+	void addShaderObject( ShaderObject* obj );
+	void setRenderState( EAGE_RENDER_MODE mode );
+	void setPostFXShader( int shaderId );
+	void render();
+	void clearBuffers();
+	void clear();
+	void reshape( sf::RenderWindow* );
+	void gether( float );
+
+private:
+	void _update();
+	void _renderToFullScreenQuad( GLuint renderTargetTexture );
+
+	TextureManager*				_tmPtr;
+	ShaderManager*				_shaMan;
+	RenderListManager*			_rlMan;
+	UIObjectManager*			_uioMan;
+	AnimationManager*			_aniMan;
+	sf::RenderWindow*			_wnd;
+	float						_fps;						
+	float						_aspect;
+
+	// post FX
+	FrameBufferObject*			_postFBO;
+	int							_postShader;
+	VisibleObject*				_fullScreenQuad;
+	bool						_isPostFX;
+
+};	// class RenderModule
+
+#endif

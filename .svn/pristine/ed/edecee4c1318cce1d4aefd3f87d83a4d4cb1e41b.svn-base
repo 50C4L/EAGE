@@ -1,0 +1,68 @@
+#include "FrameBufferObject.h"
+
+FrameBufferObject::FrameBufferObject( GLint width, GLint height, GLfloat filterMode  )
+{
+	_width	= width;
+	_height	= height;
+	_status	= false;
+
+	// create a framebuffer object
+	glGenFramebuffers(1, &_fboId);
+	glBindFramebuffer(GL_FRAMEBUFFER, _fboId);
+
+	// create a texture object
+	glGenTextures( 1, &_texId );
+	glBindTexture( GL_TEXTURE_2D, _texId );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _width, _height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMode );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMode );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+	glBindTexture( GL_TEXTURE_2D, 0 );
+
+	// create a renderbuffer object to store depth info
+	//glGenRenderbuffers( 1, &_rboId );
+	//glBindFramebuffer( GL_RENDERBUFFER, _rboId );
+	//glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, _width, _height );
+	//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _rboId);
+	//glBindRenderbuffer( GL_RENDERBUFFER, 0 );	
+	
+	// attach the texture to FBO color attachment point
+	glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _texId, 0 );
+	
+
+	// check FBO status
+	GLenum status = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+	printf( "FBO[%d] status: %d\n", _fboId, status );
+	if( status == GL_FRAMEBUFFER_COMPLETE )
+		_status = true;
+
+	// switch to system provided framebuffer
+	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+}
+
+FrameBufferObject::~FrameBufferObject()
+{
+}
+
+GLuint FrameBufferObject::getRTT()
+{
+	return _texId;
+}
+
+bool FrameBufferObject::getStatus()
+{
+	return _status;
+}
+
+void FrameBufferObject::begin()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, _fboId);
+	//glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, _fboId );
+}
+
+void FrameBufferObject::end()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+}

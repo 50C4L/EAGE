@@ -1,0 +1,139 @@
+﻿Build started 2016/3/12 8:14:39.
+     1>Project "I:\Projects\EAGE\Box.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\obj\\" /Fd"Debug\obj\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt src\core\Debugger.cpp src\core\System.cpp src\graphics\FrameBufferObject.cpp src\graphics\RenderList.cpp src\graphics\ShaderBlock.cpp src\graphics\RenderModule.cpp src\graphics\ShaderObject.cpp src\helper\Camera.cpp src\helper\EFont.cpp src\helper\FBAnimObject.cpp src\helper\input.cpp src\helper\Layer.cpp src\helper\Module.cpp src\helper\ParticleFX.cpp src\helper\SkeletonNode.cpp src\helper\State.cpp src\helper\Timer.cpp src\helper\UIObject.cpp src\helper\GameObject.cpp src\manager\AnimationManager.cpp src\manager\FontManager.cpp src\manager\ShaderBlocktManager.cpp src\manager\ShaderManager.cpp src\manager\AudioManager.cpp src\manager\StateManager.cpp src\manager\TaskManager.cpp src\manager\TextureManager.cpp src\manager\UIObjectManager.cpp src\math\AABB.cpp src\math\BSphere.cpp src\math\Environment.cpp src\math\math.cpp src\math\PhysicsModule.cpp src\resource\ResourceModule.cpp src\UI\Button.cpp src\UI\Label.cpp
+         Label.cpp
+         Button.cpp
+         ResourceModule.cpp
+         PhysicsModule.cpp
+         math.cpp
+         Environment.cpp
+         BSphere.cpp
+         AABB.cpp
+         UIObjectManager.cpp
+         TextureManager.cpp
+         TaskManager.cpp
+         StateManager.cpp
+         AudioManager.cpp
+         ShaderManager.cpp
+         ShaderBlocktManager.cpp
+         FontManager.cpp
+         AnimationManager.cpp
+         GameObject.cpp
+         UIObject.cpp
+         Timer.cpp
+         Generating Code...
+         Compiling...
+         State.cpp
+         SkeletonNode.cpp
+         ParticleFX.cpp
+         Module.cpp
+         Layer.cpp
+         input.cpp
+         FBAnimObject.cpp
+         EFont.cpp
+         Camera.cpp
+         ShaderObject.cpp
+         RenderModule.cpp
+         ShaderBlock.cpp
+         RenderList.cpp
+         FrameBufferObject.cpp
+         System.cpp
+     1>i:\projects\eage\src\core\system.cpp(119): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(304) : see declaration of 'sscanf'
+     1>i:\projects\eage\src\core\system.cpp(120): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(304) : see declaration of 'sscanf'
+         Debugger.cpp
+     1>i:\projects\eage\src\core\debugger.cpp(17): warning C4996: 'vsprintf': This function or variable may be unsafe. Consider using vsprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'vsprintf'
+         Generating Code...
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"I:\Projects\EAGE\Debug\EAGE.dll" /INCREMENTAL /NOLOGO /LIBPATH:"I:\Source Code\Box2D_v2.2.1\Box2D_v2.2.1\Build\vs2010\bin\Debug" /LIBPATH:"I:\Source Code\SFML-2.3.2\lib" Box2D.lib "sfgui-d.lib" physfs.lib "sfml-graphics-d.lib" "sfml-window-d.lib" "sfml-system-d.lib" "sfml-audio-d.lib" opengl32.lib glew32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"I:\Projects\EAGE\Debug\EAGE.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"I:\Projects\EAGE\Debug\EAGE.lib" /MACHINE:X86 /DLL Debug\obj\Debugger.obj
+         Debug\obj\System.obj
+         Debug\obj\FrameBufferObject.obj
+         Debug\obj\RenderList.obj
+         Debug\obj\ShaderBlock.obj
+         Debug\obj\RenderModule.obj
+         Debug\obj\ShaderObject.obj
+         Debug\obj\Camera.obj
+         Debug\obj\EFont.obj
+         Debug\obj\FBAnimObject.obj
+         Debug\obj\input.obj
+         Debug\obj\Layer.obj
+         Debug\obj\Module.obj
+         Debug\obj\ParticleFX.obj
+         Debug\obj\SkeletonNode.obj
+         Debug\obj\State.obj
+         Debug\obj\Timer.obj
+         Debug\obj\UIObject.obj
+         Debug\obj\GameObject.obj
+         Debug\obj\AnimationManager.obj
+         Debug\obj\FontManager.obj
+         Debug\obj\ShaderBlocktManager.obj
+         Debug\obj\ShaderManager.obj
+         Debug\obj\AudioManager.obj
+         Debug\obj\StateManager.obj
+         Debug\obj\TaskManager.obj
+         Debug\obj\TextureManager.obj
+         Debug\obj\UIObjectManager.obj
+         Debug\obj\AABB.obj
+         Debug\obj\BSphere.obj
+         Debug\obj\Environment.obj
+         Debug\obj\math.obj
+         Debug\obj\PhysicsModule.obj
+         Debug\obj\ResourceModule.obj
+         Debug\obj\Button.obj
+         Debug\obj\Label.obj
+            Creating library I:\Projects\EAGE\Debug\EAGE.lib and object I:\Projects\EAGE\Debug\EAGE.exp
+     1>physfs.lib(physfs.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(physfs.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(physfs_byteorder.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(physfs_byteorder.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(physfs_unicode.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(physfs_unicode.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(windows.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(windows.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(dir.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(dir.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(grp.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(grp.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(hog.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(hog.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(lzma.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(lzma.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(mvl.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(mvl.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(qpak.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(qpak.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(wad.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(wad.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(zip.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(zip.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(7zCrc.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(7zCrc.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(7zBuffer.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(7zBuffer.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(7zDecode.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(7zDecode.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(7zExtract.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(7zExtract.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(7zHeader.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(7zHeader.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(7zIn.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(7zIn.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(7zItem.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(7zItem.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(BranchX86.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(BranchX86.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(BranchX86_2.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(BranchX86_2.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(LzmaDecode.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(LzmaDecode.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(adler32.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(adler32.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(crc32.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(crc32.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(inffast.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(inffast.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(inflate.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(inflate.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(inftrees.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(inftrees.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+     1>physfs.lib(zutil.obj) : warning LNK4099: PDB 'vc110.pdb' was not found with 'physfs.lib(zutil.obj)' or at 'I:\Projects\EAGE\Debug\vc110.pdb'; linking object as if no debug info
+         Box.vcxproj -> I:\Projects\EAGE\Debug\EAGE.dll
+       PostBuildEvent:
+         copy "I:\Source Code\SFML-2.3.2\bin\sfml-window-d-2.dll" "I:\Projects\EAGE\Debug\"
+         copy "I:\Source Code\SFML-2.3.2\bin\sfml-system-d-2.dll" "I:\Projects\EAGE\Debug\"
+         copy "I:\Source Code\SFML-2.3.2\bin\sfml-graphics-d-2.dll" "I:\Projects\EAGE\Debug\"
+         copy "I:\Source Code\SFML-2.3.2\bin\sfml-audio-d-2.dll" "I:\Projects\EAGE\Debug\"
+         copy "I:\Source Code\SFML-2.3.2\bin\openal32.dll" "I:\Projects\EAGE\Debug\"
+         copy "E:\SFML-2.1\bin\libsndfile-1.dll" "I:\Projects\EAGE\Debug\"
+         copy "E:\PhysFS\bin\debug\physfs.dll" "I:\Projects\EAGE\Debug\"
+         copy "I:\Source Code\SFGUI-0.3.0\build\lib\Debug\sfgui-d.dll" "I:\Projects\EAGE\Debug\"
+         :VCEnd
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+     1>Done Building Project "I:\Projects\EAGE\Box.vcxproj" (Rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:25.35

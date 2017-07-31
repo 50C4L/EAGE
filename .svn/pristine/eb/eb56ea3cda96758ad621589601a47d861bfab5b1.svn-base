@@ -1,0 +1,32 @@
+#ifndef _RESOURCEMODULE_H
+#define _RESOURCEMODULE_H
+
+#include "../helper/Module.h"
+#include "../manager/FontManager.h"
+#include "../manager/TextureManager.h"
+#include <string>
+
+#define MAX_RESOURCE_NAME 32
+
+class ResourceModule:Module
+{
+public:
+	ResourceModule();
+	~ResourceModule();
+
+	bool			initialize();
+	bool			loadResFile( std::string filename );
+	void			shutdown();
+	void			create();
+	void			clear();
+
+	TextureManager*	getTexMan();
+	FontManager*	getFontMan();
+
+private:
+	TextureManager*		_texman;
+	FontManager*		_fontman;
+
+};	// class ResourceModule
+
+#endif

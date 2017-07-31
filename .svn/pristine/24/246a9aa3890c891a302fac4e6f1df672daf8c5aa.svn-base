@@ -1,0 +1,236 @@
+//#include "ShaderObject.h"
+#include "../helper/helper.h"
+#include "../helper/OpenGL.h"
+#include <fstream>
+#include <iostream>
+
+ShaderObject::ShaderObject()
+{
+	_vert = 0;
+	_frag = 0;
+	_prog = 0;
+	_vertCom = false;
+	_fragCom = false;
+	_progCom = false;
+}
+
+ShaderObject::~ShaderObject()
+{
+}
+
+bool ShaderObject::loadShader( std::string shaderName )
+{
+	std::ifstream file;
+	file.open( shaderName );
+	if( file.fail() )
+	{
+		return false;
+	}
+
+	char key[32];
+
+	while( !file.eof() )
+	{
+		file >> key;
+		if( strcmp( key, "#ifndef" ) == 0 )
+		{
+			file >> key;
+			// if this is vertex shader
+			if( strcmp( key, "VERTEX" ) == 0 )
+			{
+				std::string shader;
+				std::string line;
+				std::getline( file, line );
+				while( line != "#endif" )
+				{
+					shader += (line + "\n");
+					std::getline( file, line );
+				}
+				if( !shader.empty() )
+				{
+					// compile shader
+					_vert = glCreateShaderObjectARB( GL_VERTEX_SHADER_ARB );
+					const char* vertexShader = shader.c_str();
+					glShaderSourceARB( _vert, 1, &vertexShader, NULL );
+					glCompileShaderARB( _vert );
+
+					// check compile status
+					int state;
+					glGetObjectParameterivARB( _vert, GL_OBJECT_COMPILE_STATUS_ARB, &state );
+					if( state )	
+						_vertCom = true;
+					else
+					{
+						printf( "<ERROR> ShaderObject: [%s], failed to compile vertex shader.\n", shaderName.c_str() );
+					}
+				}
+				else
+					printf( "<ERROR> ShaderObject: [%s], No vertex shader has been found.\n", shaderName.c_str() );
+			}
+			// if this is fragment shader
+			else if( strcmp( key, "FRAGMENT" ) == 0 )
+			{
+				std::string shader;
+				std::string line;
+				std::getline( file, line );
+				while( line != "#endif" )
+				{
+					shader += (line + "\n");
+					std::getline( file, line );
+				}
+				if( !shader.empty() )
+				{
+					// compile shader
+					_frag = glCreateShaderObjectARB( GL_FRAGMENT_SHADER_ARB );
+					const char* vertexShader = shader.c_str();
+					glShaderSourceARB( _frag, 1, &vertexShader, NULL );
+					glCompileShaderARB( _frag );
+
+					// check compile status
+					int state;
+					glGetObjectParameterivARB( _frag, GL_OBJECT_COMPILE_STATUS_ARB, &state );
+					if( state )	
+						_fragCom = true;
+					else
+					{
+						printf( "<ERROR> ShaderObject: [%s], failed to compile fragment shader.\n", shaderName.c_str() );
+					}
+				}
+				else
+					printf( "<ERROR> ShaderObject: [%s], No fragment shader has been found.\n", shaderName.c_str() );
+			}
+		}
+	}
+
+	if( _vertCom && _fragCom )
+	{
+		// link program
+		_prog = glCreateProgramObjectARB();
+		glAttachObjectARB( _prog, _vert );
+		glAttachObjectARB( _prog, _frag );
+		glLinkProgramARB( _prog );
+
+		// check compile status
+		int state;
+		glGetObjectParameterivARB( _frag, GL_OBJECT_COMPILE_STATUS_ARB, &state );
+		if( state )	
+			_progCom = true;
+		else
+		{
+			printf( "<ERROR> ShaderObject: [%s], failed to link shader program.\n", shaderName.c_str() );
+		}
+	}
+	else
+	{
+		this->_printInfoLog( _prog );
+		return false;
+	}
+	printf( "ShaderObject: Successfully linked shader program, ID: %d\n", _prog );
+	return true;
+}
+
+void ShaderObject::_printInfoLog( GLuint obj )
+{
+	int infoLogLength	= 0;
+	int charsWritten	= 0;
+	char* infoLog;
+
+	glGetObjectParameterivARB( obj, GL_OBJECT_INFO_LOG_LENGTH_ARB, &infoLogLength );
+
+	if( infoLogLength>0 )
+	{
+		infoLog = (char*)malloc(infoLogLength);
+		glGetInfoLogARB( obj, infoLogLength, &charsWritten, infoLog );
+		printf( "ShaderObject: %s\n", infoLog );
+		free( infoLog );
+	}
+}
+
+void ShaderObject::activate()
+{
+	glUseProgramObjectARB( _prog );
+}
+
+void ShaderObject::destroy()
+{
+	if( _progCom )
+	{
+		glDetachObjectARB( _prog, _vert );
+		glDetachObjectARB( _prog, _frag );
+		glDeleteObjectARB( _prog );
+		glDeleteObjectARB( _vert );
+		glDeleteObjectARB( _frag );
+	}
+
+}
+
+GLuint ShaderObject::getProgramId()
+{
+	return _prog;
+}
+
+//////////////////////		UNIFORM FUNCTIONS		////////////////////////////////
+
+void ShaderObject::uniform( const char* name, int v0 )
+{
+	glUseProgramObjectARB( _prog );
+	GLint loc = glGetUniformLocationARB( _prog, name );
+	glUniform1iARB( loc, v0 );
+	glUseProgramObjectARB( 0 );
+}
+
+void ShaderObject::uniform( const char* name, sf::Vector2i v )
+{
+	glUseProgramObjectARB( _prog );
+	GLint loc = glGetUniformLocationARB( _prog, name );
+	glUniform2iARB( loc, v.x, v.y );
+	glUseProgramObjectARB( 0 );
+}
+
+void ShaderObject::uniform( const char* name, sf::Vector3i v )
+{
+	glUseProgramObjectARB( _prog );
+	GLint loc = glGetUniformLocationARB( _prog, name );
+	glUniform3iARB( loc, v.x, v.y, v.z );
+	glUseProgramObjectARB( 0 );
+}
+
+void ShaderObject::uniform( const char* name, int count, int* v )
+{
+	glUseProgramObjectARB( _prog );
+	GLint loc = glGetUniformLocationARB( _prog, name );
+	glUniform4ivARB( loc, count, v );
+	glUseProgramObjectARB( 0 );
+}
+
+void ShaderObject::uniform( const char* name, float v0 )
+{
+	glUseProgramObjectARB( _prog );
+	GLint loc = glGetUniformLocationARB( _prog, name );
+	glUniform1fARB( loc, v0 );
+	glUseProgramObjectARB( 0 );
+}
+
+void ShaderObject::uniform( const char* name, sf::Vector2f v )
+{
+	glUseProgramObjectARB( _prog );
+	GLint loc = glGetUniformLocationARB( _prog, name );
+	glUniform2fARB( loc, v.x, v.y );
+	glUseProgramObjectARB( 0 );
+}
+
+void ShaderObject::uniform( const char* name, sf::Vector3f v )
+{
+	glUseProgramObjectARB( _prog );
+	GLint loc = glGetUniformLocationARB( _prog, name );
+	glUniform3fARB( loc, v.x, v.y, v.z );
+	glUseProgramObjectARB( 0 );
+}
+
+void ShaderObject::uniform( const char* name, int count, float* v )
+{
+	glUseProgramObjectARB( _prog );
+	GLint loc = glGetUniformLocationARB( _prog, name );
+	glUniform4fvARB( loc, count, v );
+	glUseProgramObjectARB( 0 );
+}

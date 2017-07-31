@@ -1,0 +1,62 @@
+#ifndef _AUDIOMANAGER_H
+#define _AUDIOMANAGER_H
+
+#include <map>
+#include <string>
+#include "../helper/helper.h"
+
+class AudioManager
+{
+public:
+	~AudioManager();
+	static AudioManager* getInstance();
+
+	int				loadSoundFromFile( int id, std::string filePath );
+	int				loadSoundFromMemory( const void* data, std::size_t size, int id );
+	int				loadMusicFromFile( int id, std::string filePath );
+	int				loadMusicFromMemory( const void* data, std::size_t size, int id );
+	sf::SoundBuffer*getSound( int id );
+	sf::Music*		getMusic( int id );
+	void			clear();
+
+protected:
+	AudioManager();
+
+private:
+	// EMusic struct
+	struct EMusic
+	{
+		sf::Music*	music;
+		const void*	data;
+
+		EMusic()
+		{
+			music	= 0;
+			data	= 0;
+		}
+		~EMusic()
+		{
+			if( data )
+				delete data;
+			if( music )
+				delete music;
+		}
+	};
+
+
+	// deallocator
+	template <typename T>
+	struct Deallocator
+	{
+		void operator()( const std::pair<int,T> &p )
+		{
+			delete p.second;
+		}
+	};
+
+	static AudioManager*			_instance;
+	std::map<int,sf::SoundBuffer*>	_soundList;
+	std::map<int,EMusic*>			_musicList;
+};
+
+#endif

@@ -1,0 +1,84 @@
+#include "RenderListManager.h"
+#include "../helper/helper.h"
+#include <stdio.h>
+
+RenderListManager* RenderListManager::_instance = 0;
+
+RenderListManager::RenderListManager()
+{
+	_listCounts = 0;
+	_lists		= 0;
+	_texManPtr	= 0;
+	_shaManPtr  = 0;
+}
+
+RenderListManager::~RenderListManager()
+{
+}
+
+RenderListManager* RenderListManager::getInstanc()
+{
+	if( !_instance ) _instance = new RenderListManager();
+	return _instance;
+}
+
+int RenderListManager::genLists( ShaderManager* _smPtr, TextureManager* _tmPtr )
+{
+	_texManPtr = _tmPtr;
+	_shaManPtr = _smPtr;
+	_listCounts = _shaManPtr->_shaderList.size();
+	_lists = new RenderList[ _listCounts ];
+	printf( "RenderList Manager: Preparing to generate %d render lists\n", _listCounts );
+
+	ShaderManager::_mapIt it = _shaManPtr->_shaderList.begin();
+
+	for( int i = 0; i < _listCounts; i ++ )
+	{
+		if( it == _shaManPtr->_shaderList.end() )
+			break;
+		_lists[i].setID( it->first );
+		++it;
+	}
+
+	return _listCounts;
+}
+
+void RenderListManager::appendObject( VisibleObject* obj )
+{
+	for( int i =0; i < _listCounts; i++ )
+	{
+		if( _lists[i].getID() == obj->getShader() )
+		{
+			_lists[i].push( obj );
+			return;
+		}
+	}
+	printf( "RenderList Manager: Can't find suitable list for current obj\n" );
+	_lists[0].push(obj);
+}
+
+void RenderListManager::renderAll()
+{
+	int i = 0;
+	while( i < _listCounts )
+	{
+		_shaManPtr->bind( _lists[i].getID() );
+		_lists[i].render( _texManPtr );
+		i++;
+	}
+	//_texManPtr->unbind();
+}
+
+
+void RenderListManager::clearAll()
+{
+	int i = 0;
+	while( i < _listCounts )
+	{
+		_lists[i].clear();
+		i++;
+	}
+	//delete _lists;
+	_lists = 0;
+	_listCounts = 0;
+}

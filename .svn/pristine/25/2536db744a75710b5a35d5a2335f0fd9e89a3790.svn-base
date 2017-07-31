@@ -1,0 +1,170 @@
+//#include "FBAnimObject.h"
+#include "../helper/helper.h"
+#include "../manager/AnimationManager.h"
+#include <fstream>
+#include <sstream>
+
+FBAnimObject::FBAnimObject()
+{
+	_currentID		= -1;
+	_frameCount		= 0;
+	_keyFrameCount	= 0;
+	_animCount		= 0;
+	_isPlaying		= false;
+}
+
+FBAnimObject::~FBAnimObject()
+{
+	_animList.clear();
+}
+
+void FBAnimObject::update( float fps )
+{
+	if( !_isPlaying )	return;
+	int interval = (int)((fps * (float)_currentAnim.totalTime)/(float)_currentAnim.frame);
+	// move to next key frame
+	if( _frameCount >= interval )
+	{
+		if( _keyFrameCount == _currentAnim.frame )
+		{
+			_currentUV.leftTop		= _currentAnim.start;
+			_currentUV.leftBottom	= sf::Vector2f	( _currentUV.leftTop.x,						_currentUV.leftTop.y-_currentAnim.height	);
+			_currentUV.rightBottom	= sf::Vector2f	( _currentAnim.start.x+_currentAnim.offset, _currentUV.leftBottom.y						);
+			_currentUV.rightTop		= sf::Vector2f	( _currentUV.rightBottom.x,					_currentUV.leftTop.y						); 
+			_keyFrameCount = 1;		// loop to the 1st key frame
+			_frameCount = 0;
+			this->setUV( _currentUV );
+			return;
+		}
+		_currentUV.leftTop.x	+= _currentAnim.offset;
+		_currentUV.leftBottom.x += _currentAnim.offset;
+		_currentUV.rightBottom.x+= _currentAnim.offset;
+		_currentUV.rightTop.x	+= _currentAnim.offset;
+		_frameCount = 0;
+		_keyFrameCount++;
+		this->setUV( _currentUV );
+	}
+	_frameCount++;
+}
+
+int FBAnimObject::addAnimation( int id, ANIM_INFO info )
+{
+	//info.spf	= info.totalTime/(info.frame*1.0);
+	info.offset = 1.0f/(info.frame*1.0f);
+	_animList.insert( std::pair<int,ANIM_INFO>( id, info ) );
+	return id;
+}
+
+int FBAnimObject::addAnimation( std::string filename )
+{
+	printf( "FBAO: Prepare to load *.fba file [%s]\n", filename.c_str() );
+
+	std::ifstream	file;
+	ANIM_INFO		tempInfo;
+	file.open( filename );
+	if( file.fail() )	return 0;
+
+	char key[64];
+
+	while( !file.eof() )
+	{
+		file >> key;
+		if( strcmp( key, "@" ) == 0 )
+		{
+			while(1)
+			{
+				file >> key;
+				if( strcmp( key, "fStartX" ) == 0 )
+				file >> tempInfo.start.x;
+				if( strcmp( key, "fStartY" ) == 0 )
+				file >> tempInfo.start.y;
+				if( strcmp( key, "fHeight" ) == 0 )
+				file >> tempInfo.height;
+				if( strcmp( key, "iFrame" ) == 0 )
+				file >> tempInfo.frame;
+				if( strcmp( key, "dTotalTime" ) == 0 )
+				file >> tempInfo.totalTime;
+				if( strcmp( key, "$" ) == 0 )
+				{
+					tempInfo.offset = 1.0f/(tempInfo.frame*1.0f);
+					_animList.insert( std::pair<int,ANIM_INFO>( _animCount, tempInfo ) );
+					break;
+				}
+			}
+			_animCount++;
+		}
+	}
+	file.close();
+
+	return 1;
+}
+
+void FBAnimObject::addAnimationSet( int id )
+{
+	FB_ANIM_SET*	tempSet;
+	tempSet = AnimationManager::getInstance()->find( id );
+
+	for( int i = 0; i < tempSet->size; i++ )
+	{
+		_animList.insert( std::pair<int,ANIM_INFO>( _animCount, tempSet->list[i] ) );
+		_animCount++;
+	}
+
+	/* OLD STUFF :3
+	std::stringstream stream( AnimationManager::getInstance()->find( id ) );
+	char			key[256];
+	ANIM_INFO		tempInfo;
+
+	while( !stream.eof() )
+	{
+		stream >> key;
+		if( strcmp( key, "@" ) == 0 )
+		{
+			while(1)
+			{
+				stream >> key;
+				if( strcmp( key, "fStartX" ) == 0 )
+				stream >> tempInfo.start.x;
+				if( strcmp( key, "fStartY" ) == 0 )
+				stream >> tempInfo.start.y;
+				if( strcmp( key, "fHeight" ) == 0 )
+				stream >> tempInfo.height;
+				if( strcmp( key, "iFrame" ) == 0 )
+				stream >> tempInfo.frame;
+				if( strcmp( key, "dTotalTime" ) == 0 )
+				stream >> tempInfo.totalTime;
+				if( strcmp( key, "$" ) == 0 )
+				{
+					tempInfo.offset = 1.0f/(tempInfo.frame*1.0f);
+					_animList.insert( std::pair<int,ANIM_INFO>( _animCount, tempInfo ) );
+					break;
+				}
+			}
+			_animCount++;
+		}
+	}
+	*/
+}
+
+void FBAnimObject::playAnimation( int id )
+{
+	// check if the animation is playing
+	if( _currentID == id )
+		return;
+	_currentID		= id;
+	_currentAnim	= _animList[id];
+	_frameCount		= 0;
+
+	_currentUV.leftTop		= _currentAnim.start;
+	_currentUV.leftBottom	= sf::Vector2f	( _currentUV.leftTop.x,						_currentUV.leftTop.y-_currentAnim.height	);
+	_currentUV.rightBottom	= sf::Vector2f	( _currentAnim.start.x+_currentAnim.offset, _currentUV.leftBottom.y						);
+	_currentUV.rightTop		= sf::Vector2f	( _currentUV.rightBottom.x,					_currentUV.leftTop.y						); 
+	_keyFrameCount = 1; // this is the first key frame
+	_isPlaying = true;
+	this->setUV( _currentUV );
+}
+
+bool FBAnimObject::isPlaying()
+{
+	return _isPlaying;
+}

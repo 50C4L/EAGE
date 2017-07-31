@@ -1,0 +1,24 @@
+#ifndef _FRAMEBUFFEROBJECT_H
+#define _FRAMEBUFFEROBJECT_H
+
+#include "../helper/AllHeaders.h"
+
+class FrameBufferObject
+{
+public:
+	FrameBufferObject( GLint width, GLint height, GLfloat filterMode );
+	~FrameBufferObject();
+
+	void	begin();
+	void	end();
+	GLuint	getRTT();
+	bool	getStatus();
+
+private:
+	GLuint	_texId, _rboId, _fboId;
+	GLint	_width, _height;
+	bool	_status;
+
+};	// class FrameBufferObject
+
+#endif

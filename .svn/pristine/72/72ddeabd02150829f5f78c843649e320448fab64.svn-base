@@ -1,0 +1,44 @@
+#ifndef _FONTMANAGER_H
+#define _FONTMANAGER_H
+
+#include <string>
+#include <map>
+#include "../helper/EFont.h"
+
+class FontManager
+{
+	//friend class UIObject;
+public:
+						~FontManager();
+	static FontManager* getInstance();
+
+	//void				create( int num );
+	void				clear();
+	bool				loadFromFile( std::string filename, int id );
+	bool				loadFromMemory( char* data, std::size_t size, int id );
+	sf::Font*			getFont( int id );
+
+private:
+	FontManager();
+
+	static FontManager*				_instance;
+	EFont*							_fontMem;
+	//std::map<int,EFont*>			_fontList;
+	std::map<int,sf::Font*>			_fontList;
+	int								_num;
+	int								_index;
+
+	// deallocator
+	template <typename T>
+	struct Deallocator
+	{
+		void operator()( const std::pair<int,T> &p )
+		{
+			if( p )
+				delete p.second;
+		}
+	};
+
+};	// class FontManager
+
+#endif

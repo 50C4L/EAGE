@@ -1,0 +1,112 @@
+#include "PhysicsModule.h"
+#include "../manager/AnimationManager.h"
+
+void eage::pausePhysics( bool value )
+{
+	//if( PhysicsModule::_instance )
+		//PhysicsModule::_instance->pause( value );
+
+	PhysicsModule::getInstance()->pause( value );
+}
+
+void eage::setGameSpeed( float value )
+{
+	PhysicsModule::getInstance()->setSpeed( value );
+	AnimationManager::getInstance()->setSpeed( value );
+}
+
+void eage::setGravity( float x, float y )
+{
+	PhysicsModule::getInstance()->setGravity( sf::Vector2f(x,y) );
+}
+
+PhysicsModule* PhysicsModule::_instance = 0;
+
+PhysicsModule* PhysicsModule::getInstance()
+{
+	if( !_instance )	_instance = new PhysicsModule();
+	return _instance;
+}
+
+PhysicsModule::PhysicsModule()
+{
+	_currentFPS = 60.0f;
+	_isPause	= false;
+	_gameSpeed	= 1.0f;
+	_env		= 0;
+}
+
+PhysicsModule::~PhysicsModule()
+{
+}
+
+bool PhysicsModule::initialize()
+{
+	_env = Environment::getInstance();
+	return true;
+}
+
+void PhysicsModule::shutdown()
+{
+}
+
+void PhysicsModule::setSpeed( float value )
+{
+	_gameSpeed = value;
+}
+
+void PhysicsModule::setGravity( sf::Vector2f value )
+{
+	//_gravity = value;
+	_env->setGravity( value.x, value.y );
+	printf( "Physics Module: Gravity is set to (%.2f,%.2f).\n", value.x, value.y );
+}
+
+void PhysicsModule::setFPS( float value )
+{
+	_currentFPS = value;
+}
+
+void PhysicsModule::addObject( GameObject* obj )
+{
+	if( obj && obj->isPhysx() )
+		_objectList.push_back( obj );
+	else
+		printf( "<ERROR> Physics Module: Invalid game object.\n" );
+}
+
+void PhysicsModule::clear()
+{
+	_objectList.clear();
+}
+
+void PhysicsModule::pause( bool value )
+{
+	_isPause = value;
+}
+
+void PhysicsModule::update()
+{
+	if( !_isPause)
+	{
+		// calculation for object's velocity
+		sf::Vector2f GPF = _env->gravity()/_currentFPS;
+		if( !_objectList.empty() )
+		{
+			std::list<GameObject*>::iterator i = _objectList.begin();
+			while( i != _objectList.end() )
+			{
+				if( (*i)->_physxBody.IsDynamic )
+				{
+					(*i)->_physxBody.accumulation += GPF + (*i)->_physxBody.acceleration/_currentFPS;
+					sf::Vector2f temp;
+					temp = (*i)->_physxBody.uniform * (*i)->_physxBody.currentSpeed;
+					temp = temp/_currentFPS + (*i)->_physxBody.accumulation;
+					(*i)->_physxBody.history = temp;
+					(*i)->setTranslate( temp * _gameSpeed );
+				}
+				++i;
+			}
+		}
+	}
+}

@@ -1,0 +1,68 @@
+#ifndef _SYSTEM_H
+#define _SYSTEM_H
+
+#include <SFML/Graphics.hpp>
+#include <string>
+#include "../EAGE.h"
+#include "../helper/Timer.h"
+#include "../graphics/RenderModule.h"
+#include "../resource/ResourceModule.h"
+#include "../math/PhysicsModule.h"
+#include "../manager/StateManager.h"
+
+/*
+struct CoreParams:public EAGE
+{
+	sf::Vector2i	windowSize;
+	char			windowTitle[256];
+	bool			isFullScreen;
+	bool			isVSync;
+};*/
+
+class System:public EAGE
+{
+	friend void eage::exit();
+public:
+					~System();	
+	static System*	getInstance();
+
+	bool			initialize();
+	void			run();
+	void			setCoreParams( CoreParams param );
+	void			setStartState( int );
+	void			enableSplashScreen( bool value );
+	void			setSplashLength( float length );
+	void			shutdown();
+	void			loadCFG( std::string path );
+	int				appendState( int, State* );
+
+private:
+	bool			_readCFG();
+	bool			_writeCFG();
+	bool			_initGL();
+
+	std::string			_cfgPath;
+	sf::RenderWindow*	_window;
+	CoreParams			_params;
+	sf::Event*			_event;
+	Timer*				_timer;
+	TextureManager*		_texman;
+	StateManager*		_stateman;
+	RenderModule*		_renderModule;
+	ResourceModule*		_resourceModule;
+	PhysicsModule*		_physicsModule;
+	int					_startState;
+	bool				_isSplash;
+	bool				_isRunning;
+	float				_splashLength;
+
+	// debug info
+	int					_frameInterval;
+
+protected:
+					System();
+	static System*	_instance;
+
+};	// class System
+
+#endif

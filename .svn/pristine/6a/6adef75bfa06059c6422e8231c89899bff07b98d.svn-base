@@ -1,0 +1,35 @@
+#ifndef _DEBUGGER_H
+#define _DEBUGGER_H
+
+#include "../helper/helper.h"
+#include <string>
+
+class Debugger
+{
+	friend void eage::debug( const char* format, ... );
+
+public:
+	static Debugger* getInstance();
+	~Debugger();
+
+	void initializeConsole( sfg::Desktop* desk );
+	void clearLog();
+	void debug( std::string info );
+	void ouputLogFile( std::string path );
+	void hideConsole( bool flag );
+
+private:
+	Debugger();
+
+	std::string					_log;
+	sfg::Box::Ptr				_box;
+	sfg::ScrolledWindow::Ptr	_console;
+	sfg::Window::Ptr			_window;
+	sfg::Label::Ptr				_text;
+	sfg::Entry::Ptr				_entry;
+	bool						_isConsoleReady;
+
+	static Debugger*			_instance;
+};
+
+#endif

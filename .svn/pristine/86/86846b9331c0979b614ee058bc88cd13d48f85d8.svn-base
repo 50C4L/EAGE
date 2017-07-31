@@ -1,0 +1,85 @@
+#include "RenderList.h"
+#include <stdio.h>
+
+#include "../manager/TextureManager.h"
+
+RenderList::RenderList()
+{
+}
+
+RenderList::~RenderList()
+{
+}
+
+void RenderList::setName( std::string name )
+{
+	_name = name;
+}
+
+void RenderList::setID( int id )
+{
+	_id = id;
+}
+
+void RenderList::push( GameObject* obj )
+{
+	if( obj )	_objList.push_back( obj );
+}
+
+void RenderList::render()
+{
+	//TextureManager* texman;
+	//texman = TextureManager::getInstance();
+	//if( _objList.empty() )	return;
+	//_listIt it;
+	//it = _objList.begin();
+	//while( it != _objList.end() )
+	//{
+	//	if( *it && (*it)->isEnable() )
+	//	{
+	//		texman->bind( (*it)->getTexture() );
+	//		//(*it)->render();
+	//		glVertexPointer( 3, GL_FLOAT, 0, (*it)->_vertices.data() );
+	//		glTexCoordPointer( 2, GL_FLOAT, 0, (*it)->_texcoords.data() );
+	//		glDrawArrays( GL_TRIANGLES, 0, 6 );
+	//	}
+	//	++it;
+	//}
+
+	std::for_each( _objList.begin(), _objList.end(), Renderer() );
+}
+
+void RenderList::clear()
+{
+	_name.clear();
+	if( !_objList.empty() )
+	{
+		std::for_each( _objList.begin(), _objList.end(), Deallocator() );
+		_objList.clear();
+	}
+}
+
+void RenderList::sort()
+{
+	if( !_objList.empty() )
+		//std::sort( _objList.begin(), _objList.end(), this->_lessLayer );
+		_objList.sort( LessLayer() );
+}
+
+std::string RenderList::getName()
+{
+	if( !_name.empty() )
+		return _name;
+	return 0;
+}
+
+int RenderList::getID()
+{
+	return _id;
+}
+
+
+//bool RenderList::_lessLayer( const GameObject *obj1, const GameObject *obj2 )
+//{
+//	return obj1->getLayer() < obj2->getLayer();
+//}

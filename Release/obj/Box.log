@@ -1,0 +1,62 @@
+﻿Build started 2014/5/13 0:35:15.
+     1>Project "I:\Projects\EAGE\Box.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\obj\\" /Fd"Release\obj\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt src\helper\VisibleObject.cpp
+         VisibleObject.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"I:\Projects\EAGE\Release\EAGE.dll" /INCREMENTAL:NO /NOLOGO /LIBPATH:G:\SFML\lib physfs.lib "sfml-graphics.lib" "sfml-window.lib" "sfml-system.lib" "sfml-audio.lib" opengl32.lib glew32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"I:\Projects\EAGE\Release\EAGE.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"I:\Projects\EAGE\Release\EAGE.lib" /MACHINE:X86 /SAFESEH /DLL Release\obj\System.obj
+         Release\obj\FrameBufferObject.obj
+         Release\obj\RenderList.obj
+         Release\obj\RenderModule.obj
+         Release\obj\ShaderObject.obj
+         Release\obj\Camera.obj
+         Release\obj\EFont.obj
+         Release\obj\FBAnimObject.obj
+         Release\obj\input.obj
+         Release\obj\Module.obj
+         Release\obj\ParticleFX.obj
+         Release\obj\State.obj
+         Release\obj\Timer.obj
+         Release\obj\UIObject.obj
+         Release\obj\VisibleObject.obj
+         Release\obj\AnimationManager.obj
+         Release\obj\FontManager.obj
+         Release\obj\RenderListManager.obj
+         Release\obj\ShaderManager.obj
+         Release\obj\AudioManager.obj
+         Release\obj\StateManager.obj
+         Release\obj\TextureManager.obj
+         Release\obj\UIObjectManager.obj
+         Release\obj\AABB.obj
+         Release\obj\BSphere.obj
+         Release\obj\Environment.obj
+         Release\obj\math.obj
+         Release\obj\PhysicsModule.obj
+         Release\obj\ResourceModule.obj
+         Release\obj\Button.obj
+         Release\obj\Label.obj
+            Creating library I:\Projects\EAGE\Release\EAGE.lib and object I:\Projects\EAGE\Release\EAGE.exp
+         Generating code
+         Finished generating code
+         Box.vcxproj -> I:\Projects\EAGE\Release\EAGE.dll
+       PostBuildEvent:
+         copy "E:\SFML-2.1\bin\sfml-window-2.dll" "I:\Projects\EAGE\Release\"
+         copy "E:\SFML-2.1\bin\sfml-system-2.dll" "I:\Projects\EAGE\Release\"
+         copy "E:\SFML-2.1\bin\sfml-graphics-2.dll" "I:\Projects\EAGE\Release\"
+         copy "E:\SFML-2.1\bin\sfml-audio-2.dll" "I:\Projects\EAGE\Release\"
+         copy "E:\SFML-2.1\bin\openal32.dll" "I:\Projects\EAGE\Release\"
+         copy "E:\SFML-2.1\bin\libsndfile-1.dll" "I:\Projects\EAGE\Release\"
+         copy "E:\PhysFS\bin\release\physfs.dll" "I:\Projects\EAGE\Release\"
+         :VCEnd
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+     1>Done Building Project "I:\Projects\EAGE\Box.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:02.98

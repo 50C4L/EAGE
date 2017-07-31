@@ -1,0 +1,101 @@
+//#include "State.h"
+#include "helper.h"
+#include "../manager/StateManager.h"
+#include "../graphics/RenderModule.h"
+#include "../resource/ResourceModule.h"
+#include "../math/PhysicsModule.h"
+
+State::State()
+{
+	_stateManPtr = 0;
+}
+
+
+State::~State()
+{
+}
+
+void State::changeState( int id )
+{
+	_stateManPtr->changeState( id );
+}
+
+void State::getManger( StateManager* sm )
+{
+	if( sm )
+		_stateManPtr = sm;
+}
+
+void State::enter( RenderModule* rdm, ResourceModule* rsm, PhysicsModule* pxm, sf::RenderWindow* rw )
+{
+	_rdm = rdm;
+	_rsm = rsm;
+	_pxm = pxm;
+	_rw  = rw;
+
+	_rsm->create();
+
+	this->enterFunc();
+
+	_rdm->create();
+}
+
+void State::leave()
+{
+	_rdm->clear();
+	_rsm->clear();
+	_pxm->clear();
+
+	this->leaveFunc();
+
+	_rdm = 0;
+	_rsm = 0;
+	_pxm = 0;
+	_rw  = 0;
+}
+
+void State::run()
+{
+	_pxm->update();
+	_rdm->render();
+}
+
+void State::addFBAObject( FBAnimObject *obj )
+{
+	//if( typeid(obj) == typeid(FBAnimObject) )
+		_rdm->addFBAnimObject( obj );
+		if( obj->isPhysx() )
+			_pxm->addObject( obj );
+	//else
+		//printf( "<ERROR> Invalid frame based animation object detected.\n" );
+}
+
+void State::addUIObject( UIObject *obj )
+{
+	//if( typeid(obj) == typeid(UIObject) )
+		_rdm->addUIObject( obj );
+	//else
+		//printf( "<ERROR> Invalid user interface object detected.\n" );
+}
+
+void State::addObject( GameObject *obj )
+{
+	//if( typeid(obj) == typeid(GameObject) )
+		_rdm->addObj( obj );
+		if( obj->isPhysx() )
+			_pxm->addObject( obj );
+	//else
+		//printf( "<ERROR> Invalid frame based animation object detected.\n" );
+}
+
+/*
+RenderModule* State::getRenderModule()
+{
+	return _rdm;
+}
+
+ResourceModule* State::getResourceModule()
+{
+	return _rsm;
+}
+*/

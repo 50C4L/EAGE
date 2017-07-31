@@ -1,0 +1,35 @@
+#ifndef _SHADERMANAGER_H
+#define _SHADERMANAGER_H
+
+#include <map>
+#include <string>
+//#include "../graphics/ShaderObject.h"
+#include "../helper/helper.h"
+
+class ShaderManager
+{
+	friend class RenderListManager;
+	typedef std::map<int,ShaderObject>::iterator _mapIt;
+public:
+							~ShaderManager();
+
+	static ShaderManager*	getInstance();
+	bool					loadFromFile( std::string filename, int shaderId );
+	bool					release( int shaderId );
+	bool					rebuild();
+	void					bind( int shaderId );
+	ShaderObject*			find( int shaderId );
+	
+	void					disable();
+	void					clear();
+
+protected:
+					ShaderManager();
+
+private:
+	static ShaderManager*	_instance;
+	std::map<int,ShaderObject>	_shaderList;
+};	// Class ShaderManager
+
+
+#endif

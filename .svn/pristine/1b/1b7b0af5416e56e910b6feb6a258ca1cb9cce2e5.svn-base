@@ -1,0 +1,27 @@
+#ifndef _DEBUGGER_H
+#define _DEBUGGER_H
+
+#include "../helper/helper.h"
+#include <string>
+
+class Debugger
+{
+	friend void eage::debug( const char* format, ... );
+
+public:
+	static Debugger* getInstance();
+	~Debugger();
+
+	void clearLog();
+	void debug( std::string info );
+	void ouputLogFile( std::string path );
+
+private:
+	Debugger();
+
+	std::string			_log;
+
+	static Debugger*	_instance;
+};
+
+#endif

@@ -1,0 +1,31 @@
+# Frame Based Animation Test
+
+imagepath E:/Projects/Box/data/textures/animTestSrc.png
+name TEST_ANIMATION
+count 3
+
+# Lines above are for editor only
+
+@
+fStartX 0.0
+fStartY 1.0
+fHeight 1.0
+iFrame 4
+dTotalTime 1.0
+$
+
+@
+fStartX 0.0
+fStartY 0.1
+fHeight 0.8
+iFrame 4
+dTotalTime 2.0
+$
+
+@
+fStartX 0.0
+fStartY 0.5
+fHeight 0.6
+iFrame 4
+dTotalTime 1.5
+$

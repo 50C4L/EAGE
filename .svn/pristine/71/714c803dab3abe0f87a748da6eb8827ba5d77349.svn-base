@@ -1,0 +1,44 @@
+#ifndef _ANIMATIONMANAGER_H
+#define _ANIMATIONMANAGER_H
+
+#include <list>
+#include "../helper/helper.h"
+
+class FBAnimObject;
+
+class AnimationManager
+{
+public:
+	virtual						~AnimationManager();
+	static AnimationManager*	getInstance();
+
+	void	addFBObject( FBAnimObject* );
+	bool	loadFromMemory( char* data, int id );
+	char*	find( int id );
+	void	update( float );
+	void	clear();
+	void	pause( bool value );
+	void	setSpeed( float value );
+
+private:
+	AnimationManager();
+
+	static AnimationManager*	_instance;
+	std::list<FBAnimObject*>	_objectList;
+	std::map<int,char*>			_animationList;
+
+	// deallocator
+	template <typename T>
+	struct Deallocator
+	{
+		void operator()( const std::pair<int,T> &p )
+		{
+			delete p.second;
+		}
+	};
+
+	bool	_isPause;
+	float	_gameSpeed;
+};	// class AnimationManager
+
+#endif	// ANIMATIONMANAGER_H

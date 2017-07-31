@@ -1,0 +1,27 @@
+#ifndef VERTEX
+
+varying vec4 verColor;
+
+void main()
+{
+	verColor = gl_Color;
+	gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
+	gl_Position = ftransform();
+}
+
+#endif
+
+
+#ifndef FRAGMENT
+
+uniform sampler2D tex;
+varying vec4 verColor;
+
+void main()
+{
+	vec4 color = texture2D( tex, gl_TexCoord[0].st );
+	gl_FragColor = color * verColor;
+}
+
+#endif
+#

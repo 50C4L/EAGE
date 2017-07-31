@@ -1,0 +1,27 @@
+#ifndef VERTEX
+
+void main()
+{
+	gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
+	gl_Position = ftransform();
+}
+
+#endif
+
+#ifndef FRAGMENT
+
+uniform sampler2D tex;
+uniform int status 	= 0;
+uniform float R;
+uniform vec2 GB;
+
+void main()
+{
+	vec4 color = texture2D( tex, gl_TexCoord[0].st );
+	if( status == 0 )
+		gl_FragColor = color;
+	else
+		gl_FragColor = vec4( R, GB.x, GB.y, 1.0 );
+}
+
+#endif

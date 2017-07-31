@@ -1,0 +1,291 @@
+#include "ResourceModule.h"
+#include <fstream>
+
+void eage::playSound( int id )
+{
+	ResourceModule::_instance->playSound( id );
+}
+
+void eage::playMusic( int id )
+{
+	ResourceModule::_instance->playMusic( id );
+}
+
+void eage::stopAllSound()
+{
+	ResourceModule::_instance->stopAllSound();
+}
+
+void eage::stopMusic()
+{
+	ResourceModule::_instance->stopMusic();
+}
+
+void eage::pauseAudio()
+{
+	ResourceModule::_instance->pauseAudio();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ResourceModule* ResourceModule::_instance = 0;
+
+ResourceModule* ResourceModule::getInstance()
+{
+	if( !_instance )	_instance = new ResourceModule();
+	return _instance;
+}
+
+ResourceModule::ResourceModule()
+{
+	_texman				= 0;
+	_fontman			= 0;
+	_soundMan			= 0;
+	_currentMusic		= -1;
+}
+
+ResourceModule::~ResourceModule()
+{
+}
+
+
+bool ResourceModule::initialize()
+{
+	printf( "Resource Module: Instancing texture manager...\n" );
+	_texman = TextureManager::getInstance();
+	printf( "Resource Module: Instancing font manager...\n" );
+	_fontman = FontManager::getInstance();
+	printf( "Resource Module: Instancing sound buffer manager...\n" );
+	_soundMan = AudioManager::getInstance();
+
+	return true;
+}
+
+bool ResourceModule::loadResFile( std::string filename )
+{
+	printf( "Resource Module: Prepare to load *.res file [%s]\n", filename.c_str() );
+	// if the *.res file is valid
+	std::ifstream file;
+	file.open( filename );
+	if( file.fail() )	return false;
+
+	char key[MAX_RESOURCE_NAME];
+
+	while( !file.eof() )
+	{
+		file >> key;
+
+		// load fonts
+		if( strcmp( key, "[FONTS]" ) == 0 )
+		{
+			// get the number of fonts
+			int fontNum;
+			file >> fontNum;
+			_fontman->create( fontNum );
+
+			// get params
+			char name[MAX_RESOURCE_NAME];
+			char path[256];
+			while(1)
+			{
+				// resource name
+				file >> name;
+				if( strcmp( name, "$" ) == 0 ) break;
+				// resource path
+				file.get();
+				file.getline( path, sizeof( path ) );
+				if( strcmp( path, "$" ) == 0 ) break;
+
+				_fontman->loadFromFile( path, atoi(name) );
+			}
+			continue;
+		}
+
+		// load textures
+		else if( strcmp( key, "[SAMPLE]" ) == 0 )
+		{
+			char name[MAX_RESOURCE_NAME];
+			char path[256];
+			char filter[16];
+			while(1)
+			{
+				// texture name
+				file >> name;
+				if( strcmp( name, "$" ) == 0 ) break;
+				// texture path
+				file >> path;
+				if( strcmp( path, "$" ) == 0 ) break;
+				// texture filter
+				file >> filter;
+				if( strcmp( path, "$" ) == 0 ) break;
+
+				if( strcmp( filter, "LINEAR" ) == 0 )
+					_texman->loadFromFile( path, atoi(name), GL_LINEAR );
+				else if( ( strcmp( filter, "NEAREST" ) == 0 ) )
+					_texman->loadFromFile( path, atoi(name), GL_NEAREST );
+			}
+			continue;
+		}
+		
+		// load sound effects
+		else if( strcmp( key, "[SOUND]") == 0 )
+		{
+			char name[MAX_RESOURCE_NAME];
+			char path[256];
+			while(1)
+			{
+				// sound id
+				file >> name;
+				if( strcmp( name, "$" ) == 0 ) break;
+				// sound path
+				file >> path;
+				if( strcmp( path, "$" ) == 0 ) break;
+
+				//_soundMan->loadFromFile( atoi(name), path );
+				int id = _soundMan->loadSoundFromFile( atoi(name), path );
+				printf( "Audio Manager: Sound buffer [ID:%d] has been loaded from [%s]\n", id, path );
+			}
+			continue;
+		}
+		
+		// load back ground music
+		else if( strcmp( key, "[MUSIC]") == 0 )
+		{
+			char name[MAX_RESOURCE_NAME];
+			char path[256];
+			while(1)
+			{
+				// sound id
+				file >> name;
+				if( strcmp( name, "$" ) == 0 ) break;
+				// sound path
+				file >> path;
+				if( strcmp( path, "$" ) == 0 ) break;
+
+				//_soundMan->loadFromFile( atoi(name), path );
+				int id = _soundMan->loadMusicFromFile( atoi(name), path );
+				printf( "Audio Manager: Music [ID:%d] has been opened from [%s]\n", id, path );
+			}
+			continue;
+		}
+	}
+
+	return true;
+}
+
+void ResourceModule::playSound( int id )
+{
+	int availChannel = -1;
+	for( int i = 0; i < MAX_SOUND_CHANNEL; i++ )
+	{
+		// check for available sound channel
+		if( _currentSound[i].getStatus() != sf::Sound::Playing )
+		{
+			// found available channel
+			availChannel = i;
+			break;
+		}
+	}
+
+	// if there is an available channel
+	if( availChannel != -1 )
+	{
+		_currentSound[availChannel].setBuffer(*_soundMan->getSound( id ));
+		_currentSound[availChannel].setVolume( 100 );
+		_currentSound[availChannel].play();
+	}
+
+	// no available channel, do nothing
+}
+
+void ResourceModule::playMusic( int id )
+{
+	sf::Music* music;
+	music = _soundMan->getMusic( id );
+
+	// if there is music playing already
+	if( _currentMusic != -1 )
+	{
+		sf::Music* priorMusic = _soundMan->getMusic( _currentMusic );
+		if( priorMusic->getStatus() == sf::Sound::Playing )
+		{
+			priorMusic->stop();
+		}
+	}
+
+	_currentMusic = id;
+	music->setLoop( true );
+	music->play();
+}
+
+void ResourceModule::stopAllSound()
+{
+	for( int i = 0; i < MAX_SOUND_CHANNEL; i ++ )
+	{
+		_currentSound[i].stop();
+	}
+}
+
+void ResourceModule::stopMusic()
+{
+	sf::Music* music = _soundMan->getMusic( _currentMusic );
+	if( music->getStatus() == sf::Sound::Playing )
+	{
+		music->stop();
+	}
+}
+
+void ResourceModule::pauseAudio()
+{
+	for( int i = 0; i < MAX_SOUND_CHANNEL; i ++ )
+	{
+		_currentSound[i].pause();
+	}
+
+	sf::Music* music = _soundMan->getMusic( _currentMusic );
+	if( music->getStatus() == sf::Sound::Playing )
+	{
+		music->pause();
+	}
+}
+
+void ResourceModule::create()
+{
+	_texman->rebuild();
+}
+
+void ResourceModule::shutdown()
+{
+	if( _texman )
+	{
+		delete _texman;
+		_texman = 0;
+	}
+	if( _fontman )
+	{
+		delete _fontman;
+		_fontman = 0;
+	}
+	if( _soundMan )
+	{
+		delete _soundMan;
+		_soundMan = 0;
+	}
+}
+
+void ResourceModule::clear()
+{
+	_texman->clear();
+	_fontman->clear();
+	//_soundMan->clear();
+}
+
+TextureManager* ResourceModule::getTexMan()
+{
+	return _texman;
+}
+
+FontManager* ResourceModule::getFontMan()
+{
+	return _fontman;
+}

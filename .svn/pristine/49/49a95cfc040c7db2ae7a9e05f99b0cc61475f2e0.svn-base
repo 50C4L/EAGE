@@ -1,0 +1,74 @@
+#ifndef _ShaderBlock_H
+#define _ShaderBlock_H
+
+#include <list>
+#include <vector>
+#include <string>
+#include "../helper/helper.h"
+#include "../graphics/RenderList.h"
+#include "../manager/TextureManager.h"
+
+class ShaderBlock
+{
+	typedef std::list<GameObject*>::iterator _listIt;
+	friend class RenderModule;
+
+public:
+				ShaderBlock();
+				~ShaderBlock();
+	void		setName( std::string name );
+	void		setID( int id );
+	void		genRenderList();
+	void		push( GameObject* obj );
+	void		render();
+	void		sort();
+	void		clear();
+	std::string getName();
+	int			getID();
+
+private:
+	int									_id;
+	int									_listCount;
+	std::string							_name;
+	std::list<GameObject*>				_objList;
+	RenderList*							_lists;
+
+	//bool		_lessLayer( const GameObject *obj1, const GameObject *obj2 );
+
+	/*struct Renderer
+	{
+		void operator()( GameObject* p )
+		{
+			if( p->_isEnable )
+			{
+				TextureManager::getInstance()->bind( p->_texid );
+				glVertexPointer( 3, GL_FLOAT, 0, p->_vertices.data() );
+				glTexCoordPointer( 2, GL_FLOAT, 0, p->_texcoords.data() );
+				glDrawArrays( GL_TRIANGLES, 0, 6 );
+			}
+		}
+	};*/
+
+	/*struct Deallocator
+	{
+		void operator()( GameObject* p )
+		{
+			if( p )
+			{
+				delete p;
+				p = 0;
+			}
+		}
+	};*/
+
+	/*struct LessLayer
+	{
+		bool operator()( const GameObject* obj1, const GameObject* obj2 )
+		{
+			return obj1->getLayer() < obj2->getLayer();
+		}
+	};*/
+
+};	// class Render
+
+#endif

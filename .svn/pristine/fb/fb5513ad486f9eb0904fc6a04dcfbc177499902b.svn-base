@@ -1,0 +1,136 @@
+#include "helper.h"
+
+SekeletonNode::SekeletonNode()
+{
+	_child = 0;
+	_parent = 0;
+	_childCount = 0;
+}
+
+
+SekeletonNode::~SekeletonNode()
+{
+	clear();
+}
+
+
+sf::Vector2f SekeletonNode::getPosition()
+{
+	return _position;
+}
+
+
+void SekeletonNode::setPosition( sf::Vector2f pos )
+{
+	_position = pos;
+}
+
+
+void SekeletonNode::clear()
+{
+	if( _child )
+	{
+		delete _child;
+		_childCount = 0;
+		_child = 0;
+	}
+}
+
+
+void SekeletonNode::attach( GameObject* obj )
+{
+	if( obj )
+		_attachment = obj;
+}
+
+
+void SekeletonNode::translate( sf::Vector2f direction )
+{
+	_position += direction;
+	// if have child
+	if( _childCount > 0 )
+	{
+		for( int i = 0; i < _childCount; i++ )
+		{
+			_child[i].translate( direction );
+		}
+	}
+}
+
+
+void SekeletonNode::rotate( sf::Vector2f center, float angle )
+{
+	sf::Transform transform = sf::Transform::Identity;
+	transform.rotate( angle, center );
+	_position = transform * _position;
+
+	// if have child
+	if( _childCount > 0 )
+	{
+		for( int i = 0; i < _childCount; i++ )
+		{
+			_child[i].rotate( transform );
+		}
+	}
+}
+
+
+void SekeletonNode::rotate( sf::Transform trans )
+{
+	_position = trans * _position;
+
+	// if have child
+	if( _childCount > 0 )
+	{
+		for( int i = 0; i < _childCount; i++ )
+		{
+			_child[i].rotate( trans );
+		}
+	}
+}
+
+
+void SekeletonNode::rotateArroundParent( float angle )
+{
+	if( _parent )
+	{
+		sf::Transform transform = sf::Transform::Identity;
+		transform.rotate( angle, _parent->getPosition() );
+		_position = transform * _position;
+
+		// if have child
+		if( _childCount > 0 )
+		{
+			for( int i = 0; i < _childCount; i++ )
+			{
+				_child[i].rotate( transform );
+			}
+		}
+	}
+}
+
+
+void SekeletonNode::setParent( SekeletonNode* par )
+{
+	if( par )
+		_parent = par;
+}
+
+
+bool SekeletonNode::addNode( SekeletonNode node )
+{
+	if( !_child )
+		_child = new SekeletonNode[MAX_NODES_NUMBER];
+
+	if( _childCount < MAX_NODES_NUMBER )
+	{
+		_child[_childCount] = node;
+		_child[_childCount].setParent( this );
+		_childCount++;
+
+		return true;
+	}
+
+	return false;
+}
+

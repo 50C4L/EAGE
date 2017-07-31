@@ -1,0 +1,84 @@
+#include "PhyxState.h"
+
+PhyxState* PhyxState::_instance = NULL;
+
+
+PhyxState* PhyxState::getInstance()
+{
+	if( !_instance ) _instance = new PhyxState();
+	return _instance;
+}
+
+
+PhyxState::PhyxState()
+{
+	_mlFlag = false;
+}
+
+
+PhyxState::~PhyxState()
+{
+}
+
+
+void PhyxState::enterFunc()
+{
+	eage::loadResourceIndices( "data/scenes/phyxTestScene.res", EAGE_FROM_MEMORY );
+	//eage::setPostFXShader( 1 );
+	//eage::setRenderMode( EAGE_POST_EFFECT );
+
+	// creates ground
+	_ground = new GameObject();
+	_ground->setSize( sf::Vector2f(640.0f, 50.0f), sf::Vector2f(400.0f,30.0f) );
+	_ground->setTexture( 2 );
+	_ground->setLayer( 0.0f );
+	_ground->setShader( 1 );
+	_ground->setDynamic( false );
+	eage::appendObject( _ground );
+
+	// creates block
+	_block = new GameObject();
+	_block->setSize( sf::Vector2f(640.0f, 480.0f), sf::Vector2f(15.0f,15.0f) );
+	_block->setTexture( 2 );
+	_block->setLayer( 0.0f );
+	_block->setShader( 1 );
+	_block->setDynamic( false );
+	eage::appendObject( _block );
+
+
+	eage::setGravity( 0.0f, -0.03f );
+}
+
+
+void PhyxState::control()
+{
+	if( sf::Mouse::isButtonPressed( sf::Mouse::Left ) )
+	{
+		if( !_mlFlag )
+		{
+			sf::Vector2f pos = eage::getMouseWorldCoord();
+			_spwanBox( pos.x, pos.y );
+			_mlFlag = true;
+		}
+	}
+	else
+		_mlFlag = false;
+}
+
+
+void PhyxState::leaveFunc()
+{
+}
+
+
+void PhyxState::_spwanBox( float mouseX, float mouseY )
+{
+	GameObject* box = new GameObject();
+	box->setSize( sf::Vector2f(mouseX,mouseY), sf::Vector2f(25.0f,25.0f) );
+	box->setTexture( 1 );
+	box->setLayer( 0.0f );
+	box->setShader( 1 );
+	box->setDynamic( true );
+	box->setFixedRotation( false );
+	eage::appendObject( box );
+}

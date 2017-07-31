@@ -1,0 +1,25 @@
+#ifndef _ANIMATIONMANAGER_H
+#define _ANIMATIONMANAGER_H
+
+#include <list>
+//#include "../helper/FBAnimObject.h"
+class FBAnimObject;
+
+class AnimationManager
+{
+public:
+	virtual						~AnimationManager();
+	static AnimationManager*	getInstance();
+
+	void addFBObject( FBAnimObject* );
+	void update( float );
+	void clear();
+
+private:
+	AnimationManager();
+
+	static AnimationManager*	_instance;
+	std::list<FBAnimObject*>	_objectList;
+};	// class AnimationManager
+
+#endif	// ANIMATIONMANAGER_H

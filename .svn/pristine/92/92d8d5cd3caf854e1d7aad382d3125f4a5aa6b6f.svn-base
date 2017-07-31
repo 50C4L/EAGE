@@ -1,0 +1,45 @@
+#ifndef _PHYSICSMODULE_H
+#define _PHYSICSMODULE_H
+
+// multi-progress physics engine
+
+#include <SFML\System.hpp>
+#include <list>
+#include "../helper/helper.h"
+#include "Environment.h"
+
+
+class PhysicsModule
+{
+public:
+	static PhysicsModule*	getInstance();
+	virtual ~PhysicsModule();
+
+	bool initialize();
+	void shutdown();
+
+	void setSpeed( float value );
+	void setGravity( sf::Vector2f value );
+	void setFPS( float value );
+	void addObject( VisibleObject* obj );
+	void pause( bool value );
+	void clear();
+	void update();
+
+protected:
+	PhysicsModule();
+
+private:
+	static PhysicsModule*		_instance;
+	std::list<VisibleObject*>	_objectList;
+
+	sf::Vector2f	_gravity;
+	float			_currentFPS;
+	bool			_isPause;
+	Environment*	_env;
+	float			_gameSpeed;
+};
+
+
+#endif
+

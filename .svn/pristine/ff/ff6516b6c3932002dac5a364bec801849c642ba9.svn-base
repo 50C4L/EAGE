@@ -1,0 +1,34 @@
+#ifndef _PLAYSTATE_H
+#define _PLAYSTATE_H
+
+#include "../../../src/helper/helper.h"
+#include "player.h"
+
+class PlayState:public State
+{
+public:
+					~PlayState();
+
+	virtual void	enterFunc();
+	virtual void	control();
+	virtual void	leaveFunc();
+
+	static PlayState* getInstance();
+	
+protected:
+	PlayState();
+	static PlayState* _instance;
+
+private:
+	// test
+	Player*				_player;
+	VisibleObject*		_obsticle;
+	ParticleFX*			_test;
+	Camera*				_camera;
+	Button*				_button;
+	Button*				_nextBtn;
+	Label*				_title;
+
+};	// class PlayState
+
+#endif

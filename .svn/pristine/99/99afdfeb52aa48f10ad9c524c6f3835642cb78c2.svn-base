@@ -1,0 +1,395 @@
+//#include "VisibleObject.h"
+#include "../helper/helper.h"
+#include "OpenGL.h"
+
+#define LT 0
+#define LB 1
+#define RB 2
+#define RT 4
+#define VERTEX_COUNT 6
+
+// Friendly functions
+bool eage::isCollidedAABB( VisibleObject* obj1, VisibleObject* obj2 )
+{
+	return obj1->_physxBody.aabb.isCollide( obj2->_physxBody.aabb );
+}
+
+bool eage::isCollidedAABB( VisibleObject* obj, sf::Vector2f vec )
+{
+	return obj->_physxBody.aabb.isCollide( vec );
+}
+
+bool eage::isCollidedBS( VisibleObject* obj1, VisibleObject* obj2 )
+{
+	return obj1->_physxBody.bsphere.isCollide( obj2->_physxBody.bsphere );
+}
+
+bool eage::isCollidedBS( VisibleObject* obj, sf::Vector2f vec )
+{
+	return obj->_physxBody.bsphere.isCollide( vec );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+VisibleObject::VisibleObject()
+{
+	_texid				= 0;
+	_shaid				= 0;
+	//_uv.leftTop.x		= 0.0f;	_uv.leftTop.y		= 1.0f;
+	//_uv.leftBottom.x	= 0.0f;	_uv.leftBottom.y	= 0.0f;
+	//_uv.rightBottom.x	= 1.0f;	_uv.rightBottom.y	= 0.0f;
+	//_uv.rightTop.x		= 1.0f;	_uv.rightTop.y		= 1.0f;
+	Texcoord temp;
+	temp.s = 0.0f; temp.t = 1.0f;
+	_texcoords.push_back( temp );
+	temp.s = 0.0f; temp.t = 0.0f;
+	_texcoords.push_back( temp );
+	temp.s = 1.0f; temp.t = 0.0f;
+	_texcoords.push_back( temp );
+	temp.s = 1.0f; temp.t = 0.0f;
+	_texcoords.push_back( temp );
+	temp.s = 1.0f; temp.t = 1.0f;
+	_texcoords.push_back( temp );
+	temp.s = 0.0f; temp.t = 1.0f;
+	_texcoords.push_back( temp );
+
+	_layer = 0.0f;
+	_physxBody.mass			= 1.0f;
+	_physxBody.inertia		= 1.0f;
+	_physxBody.currentSpeed	= 0.0f;
+	_physxBody.maxSpeed		= 1000.0f;
+	_physxBody.radius		= 0.0f;
+	_physxBody.IsDynamic	= true;
+	_isEnable = true;
+	_isCaculusPhysx = true;
+}
+
+VisibleObject::~VisibleObject()
+{
+}
+
+void VisibleObject::scaleAABB( float value )
+{
+	_physxBody.aabb.scale( value );
+}
+
+void VisibleObject::setTexture( int id )
+{
+	_texid = id;
+}
+
+void VisibleObject::setShader( int id )
+{
+	_shaid = id;
+}
+
+void VisibleObject::setPhysx( bool flag )
+{
+	_isCaculusPhysx = flag;
+}
+
+bool VisibleObject::isPhysx()
+{
+	return _isCaculusPhysx;
+}
+
+void VisibleObject::setSize( sf::Vector2f leftTop, sf::Vector2f leftBottom, sf::Vector2f rightBottom, sf::Vector2f rightTop )
+{
+	Vertex temp;
+	// first triangle
+	temp.pos = leftTop;
+	temp.layer = _layer;
+	_vertices.push_back( temp );
+	temp.pos = leftBottom;
+	_vertices.push_back( temp );
+	temp.pos = rightBottom;
+	_vertices.push_back( temp );
+
+	// second triangle
+	temp.pos = rightBottom;
+	_vertices.push_back( temp );
+	temp.pos = rightTop;
+	_vertices.push_back( temp );
+	temp.pos = leftTop;
+	_vertices.push_back( temp );
+	// first triangle
+	/*
+	_vertices.push_back( sf::Vector3f( leftTop.x, leftTop.y, _layer ) );
+	_vertices.push_back( sf::Vector3f( leftBottom.x, leftBottom.y, _layer ) );
+	_vertices.push_back( sf::Vector3f( rightBottom.x, rightBottom.y, _layer ) );
+
+	// second triangle
+	_vertices.push_back( sf::Vector3f( rightBottom.x, rightBottom.y, _layer ) );
+	_vertices.push_back( sf::Vector3f( rightTop.x, rightTop.y, _layer ) );
+	_vertices.push_back( sf::Vector3f( leftTop.x, leftTop.y, _layer ) );
+	*/
+	//_LT = leftTop;
+	//_LB = leftBottom;
+	//_RB = rightBottom;
+	//_RT = rightTop;
+	//_CT = (_vertices[RT].pos - _vertices[LB].pos)/2.0f + _vertices[LB].pos;
+	_calculateCenter();
+
+	// create bounding object
+	this->_createAABB();
+	this->_createBSphere();
+}
+
+void VisibleObject::setUV( VO_uvCoordinate uvs )
+{
+	//_uv = uvs;
+	Texcoord temp;
+	temp.s = uvs.leftTop.x; temp.t = uvs.leftTop.y;
+	_texcoords[0] = temp;
+	temp.s = uvs.leftBottom.x; temp.t = uvs.leftBottom.y;
+	_texcoords[1] = temp;
+	temp.s = uvs.rightBottom.x; temp.t = uvs.rightBottom.y;
+	_texcoords[2] = temp;
+	temp.s = uvs.rightBottom.x; temp.t = uvs.rightBottom.y;
+	_texcoords[3] = temp;
+	temp.s = uvs.rightTop.x; temp.t = uvs.rightTop.y;
+	_texcoords[4] = temp;
+	temp.s = uvs.leftTop.x; temp.t = uvs.leftTop.y;
+	_texcoords[5] = temp;
+}
+
+void VisibleObject::setLayer( float layer )
+{
+	for( int i = 0; i < VERTEX_COUNT; i++ )
+	{
+		_vertices[i].layer = layer;
+	}
+	//_layer = layer;
+}
+
+void VisibleObject::setEnable( bool flag )
+{
+	_isEnable = flag;
+}
+
+void VisibleObject::setTranslate( float x, float y )
+{
+	_transform.translate( x, y );
+	for( int i = 0; i < VERTEX_COUNT; i++ )
+	{
+		_vertices[i].pos = _transform * _vertices[i].pos;
+	}
+	/*
+	_vertices[LT].pos = _transform * _vertices[LT].pos;
+	_vertices[LT].pos = _transform * _LB;
+	_vertices[LT].pos = _transform * _RB;
+	_vertices[LT].pos = _transform * _RT;
+	*/
+	_physxBody.aabb.translate( sf::Vector2f(x,y) );
+	//_CT = (_RT - _LB)/2.0f + _LB;
+	_calculateCenter();
+	_createBSphere();
+	this->setIdentity();
+}
+
+void VisibleObject::setTranslate( sf::Vector2f pos )
+{
+	_transform.translate( pos );
+	for( int i = 0; i < VERTEX_COUNT; i++ )
+	{
+		_vertices[i].pos = _transform * _vertices[i].pos;
+	}
+	/*
+	_LT = _transform * _LT;
+	_LB = _transform * _LB;
+	_RB = _transform * _RB;
+	_RT = _transform * _RT;
+	*/
+	_physxBody.aabb.translate( pos );
+	//_CT = (_RT - _LB)/2.0f + _LB;
+	_calculateCenter();
+	_createBSphere();
+	this->setIdentity();
+}
+
+void VisibleObject::setRotate( float angle )
+{
+	_transform.rotate( angle );
+	for( int i = 0; i < VERTEX_COUNT; i++ )
+	{
+		_vertices[i].pos = _transform * _vertices[i].pos;
+	}
+	_calculateCenter();
+	_createAABB();
+	_createBSphere();
+	/*
+	_LT = _transform * _LT;
+	_LB = _transform * _LB;
+	_RB = _transform * _RB;
+	_RT = _transform * _RT;
+	*/
+	this->setIdentity();
+}
+
+void VisibleObject::setRotate( float angle, sf::Vector2f point )
+{
+	_transform.rotate( angle, point );
+	for( int i = 0; i < VERTEX_COUNT; i++ )
+	{
+		_vertices[i].pos = _transform * _vertices[i].pos;
+	}
+	/*
+	_LT = _transform * _LT;
+	_LB = _transform * _LB;
+	_RB = _transform * _RB;
+	_RT = _transform * _RT;
+	*/
+	_calculateCenter();
+	_createAABB();
+	_createBSphere();
+	this->setIdentity();
+}
+
+void VisibleObject::setIdentity()
+{
+	_transform = sf::Transform::Identity;
+}
+
+void VisibleObject::render()
+{
+	if( _isEnable )
+	{
+		/*
+		GLfloat vertices[18] = 
+		{
+			_LT.x, _LT.y, _layer, _LB.x, _LB.y, _layer, _RB.x, _RB.y, _layer, // first triangle
+			_RB.x, _RB.y, _layer, _RT.x, _RT.y, _layer, _LT.x, _LT.y, _layer  // second triangle 
+		};
+		*/
+		/*
+		GLfloat	texcoords[12] =
+		{
+			_uv.leftTop.x,		_uv.leftTop.y,
+			_uv.leftBottom.x,	_uv.leftBottom.y,
+			_uv.rightBottom.x,	_uv.rightBottom.y,
+			_uv.rightBottom.x,	_uv.rightBottom.y,
+			_uv.rightTop.x,		_uv.rightTop.y,
+			_uv.leftTop.x,		_uv.leftTop.y
+		};
+		*/
+		/*
+		GLubyte indices[ 6 ] = 
+		{
+			0,1,2,2,3,0
+		};
+		*/
+
+		//glVertexPointer( 3, GL_FLOAT, 0, _vertices.data() );
+		glVertexPointer( 3, GL_FLOAT, 0, _vertices.data() );
+		glTexCoordPointer( 2, GL_FLOAT, 0, _texcoords.data() );
+		//glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, indices );
+		glDrawArrays( GL_TRIANGLES, 0, 6 );
+	}
+}
+
+int VisibleObject::getTexture()
+{
+	return _texid;
+}
+
+int VisibleObject::getShader()
+{
+	return _shaid;
+}
+
+bool VisibleObject::isEnable()
+{
+	return _isEnable;
+}
+
+void VisibleObject::getVertices( sf::Vector2f &lt, sf::Vector2f &lb, sf::Vector2f &rb, sf::Vector2f &rt )
+{
+	lt = _vertices[LT].pos; lb = _vertices[LB].pos; rb = _vertices[RB].pos; rt = _vertices[RT].pos;
+}
+
+sf::Vector2f VisibleObject::getCentre()
+{
+	return _CT;
+}
+
+sf::Vector2f VisibleObject::getHistory()
+{
+	return _physxBody.history;
+}
+
+void VisibleObject::setMass( float value )
+{
+	_physxBody.mass = value;
+}
+
+void VisibleObject::setAcceleration( sf::Vector2f vector )
+{
+	_physxBody.acceleration = vector;
+}
+
+void VisibleObject::setUniform( sf::Vector2f vector )
+{
+	_physxBody.uniform = vector;
+}
+
+void VisibleObject::setInertia( float value )
+{
+	_physxBody.inertia = value;
+}
+
+void VisibleObject::setRadius( float value )
+{
+	_physxBody.radius = value;
+}
+
+void VisibleObject::setCurrentSpeed( float value )
+{
+	_physxBody.currentSpeed = value;
+}
+
+void VisibleObject::setMaxSpeed( float value )
+{
+	_physxBody.maxSpeed = value;
+}
+
+void VisibleObject::setDynamic( bool value )
+{
+	_physxBody.IsDynamic = value;
+}
+
+void VisibleObject::_createAABB()
+{
+	//sf::Vector2f lt,lb,rb,rt;
+	//this->getVertices( lt, lb, rb, rt );
+	
+	_physxBody.aabb.addVertex( _vertices[LT].pos );
+	_physxBody.aabb.addVertex( _vertices[LB].pos );
+	_physxBody.aabb.addVertex( _vertices[RB].pos );
+	_physxBody.aabb.addVertex( _vertices[RT].pos );
+}
+
+void VisibleObject::_createBSphere()
+{
+	_physxBody.bsphere.create( _CT, _physxBody.radius );
+}
+
+void VisibleObject::_calculateCenter()
+{
+	_CT = (_vertices[RT].pos - _vertices[LB].pos)/2.0f + _vertices[LB].pos;
+}
+
+bool VisibleObject::isInsertAABB( sf::Vector2f p )
+{
+	if( _physxBody.aabb.isCollide( p ) )
+		return true;
+	else 
+		return false;
+}
+
+bool VisibleObject::isInsertBSphere( sf::Vector2f p )
+{
+	if( _physxBody.bsphere.isCollide( p ) )
+		return true;
+	else
+		return false;
+}

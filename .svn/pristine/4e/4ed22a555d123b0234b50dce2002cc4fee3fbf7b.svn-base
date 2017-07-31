@@ -1,0 +1,34 @@
+#ifndef _TEXTUREMANAGER_H
+#define _TEXTUREMANAGER_H
+
+#include <map>
+#include <string>
+#include "../helper/helper.h"
+
+class TextureManager
+{
+	friend class ShaderBlock;
+	typedef std::map<int,GLuint>::iterator _mapIt;
+public:
+							
+							~TextureManager();
+	static TextureManager*	getInstance();
+	bool					loadFromFile( std::string filename, int texid, GLint filter );
+	bool					loadFromMemory( const void* data, std::size_t size, int texid, GLint filter );
+	bool					unload( int texid );
+	void					bind( int texid );
+	void					rebuild();
+	void					unbind();
+	void					clear();
+	int						getCount();
+
+protected:
+							TextureManager();
+
+private:
+	static TextureManager*	_instance;
+	std::map<int,GLuint>	_texList;
+
+};	// class TextureManager
+
+#endif

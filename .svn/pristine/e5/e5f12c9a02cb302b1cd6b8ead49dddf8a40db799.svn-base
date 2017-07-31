@@ -1,0 +1,27 @@
+#include "player.h"
+
+Player::Player()
+{
+}
+
+Player::~Player()
+{
+}
+
+void Player::move( sf::Vector2f dir, float speed )
+{
+	this->setUniform( dir );
+	this->setCurrentSpeed( speed );
+}
+
+void Player::stop()
+{
+	this->setUniform( sf::Vector2f(0.0,0.0) );
+	this->setCurrentSpeed( 0.0f );
+	//this->setIdentity();
+}
+
+void Player::react()
+{
+	this->setTranslate( this->getHistory() * (-1.0f) );
+}

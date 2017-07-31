@@ -1,0 +1,31 @@
+#ifndef _ANIMATIONMANAGER_H
+#define _ANIMATIONMANAGER_H
+
+#include <list>
+#include "../helper/helper.h"
+
+class FBAnimObject;
+
+class AnimationManager
+{
+	friend void eage::pauseAnimation( bool value );
+
+public:
+	virtual						~AnimationManager();
+	static AnimationManager*	getInstance();
+
+	void addFBObject( FBAnimObject* );
+	void update( float );
+	void clear();
+	void pause( bool value );
+
+private:
+	AnimationManager();
+
+	static AnimationManager*	_instance;
+	std::list<FBAnimObject*>	_objectList;
+
+	bool	_isPause;
+};	// class AnimationManager
+
+#endif	// ANIMATIONMANAGER_H

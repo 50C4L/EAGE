@@ -1,0 +1,99 @@
+Engine version: 1.30122015213422
+CORE: Initializing...
+CORE: Preparing to read cfg file...
+CORE: Initializing OpenGL states...
+CORE: GLEW initialized, version 1.10.0
+CORE: Main timer instanced.
+CORE: Preparing to initialize modules...
+Resource Module: Instancing texture manager...
+Resource Module: Instancing font manager...
+Resource Module: Instancing sound buffer manager...
+Resource Module: Initializing PhysicsFS...
+Render Module: Instancing render list manager ......
+Render Module: Instancing UI object manager ......
+Render Module: Instancing animation object manager ......
+Render Module: Initializing shader manager ......
+Render Module: Initializing main camera ......
+Render Module: Initializing SFGUI .....
+State Manager: Initializing state manager.
+State Manager: State 1 has been inserted.
+State Manager: State 2 has been inserted.
+State Manager: State 3 has been inserted.
+State Manager: State 4 has been inserted.
+State Manager: State 5 has been inserted.
+CORE: Main timer starts.
+CORE: Begining to loop...
+State Manager: Changes state to 2.
+Texture Manager: Creating default texture...
+Resource Module: Prepare to load *.res file [data/scenes/animationTest_scene.res]
+Resource Module: [fonts/Mars Police Italic.ttf] has been read, length: 22104
+Resource Manager: Font [1] has been loaded.
+Resource Module: [fonts/Elements.ttf] has been read, length: 28360
+Resource Manager: Font [2] has been loaded.
+Resource Module: [fonts/INTERDIM.TTF] has been read, length: 55624
+Resource Manager: Font [3] has been loaded.
+Resource Module: [textures/one.png] has been read, length: 3382
+Texture Manager: Texture '1' has been loaded.
+Resource Module: [textures/two.png] has been read, length: 3373
+Texture Manager: Texture '2' has been loaded.
+Resource Module: [textures/three.png] has been read, length: 3812
+Texture Manager: Texture '3' has been loaded.
+Resource Module: [textures/animTestSrc.png] has been read, length: 47690
+Texture Manager: Texture '4' has been loaded.
+Resource Module: [textures/btn_begin.png] has been read, length: 50081
+Texture Manager: Texture '5' has been loaded.
+Resource Module: [textures/btn_exit.png] has been read, length: 48923
+Texture Manager: Texture '6' has been loaded.
+Resource Module: [textures/tile.png] has been read, length: 44613
+Texture Manager: Texture '7' has been loaded.
+Resource Module: [animations/player.fba] has been read, length: 414
+Animation Manager: Animation set [1] has been loaded, includes 3 animations.
+Resource Module: [sounds/Default.wav] has been read, length: 7092
+Resource Module: [sounds/Button_01.wav] has been read, length: 64556
+Resource Module: [music/hardcore_01.wav] has been read, length: 45207016
+Resource Module: [shaders/uniformTest.so] has been read, length: 424
+ShaderObject: Successfully linked shader program, ID: 6
+Shader Manager: Shader [1] has been loaded.
+Resource Module: [shaders/TextureDiscarding.so] has been read, length: 360
+ShaderObject: Successfully linked shader program, ID: 9
+Shader Manager: Shader [2] has been loaded.
+Resource Module: [shaders/GreyScalePFX.so] has been read, length: 362
+ShaderObject: Successfully linked shader program, ID: 12
+Shader Manager: Shader [3] has been loaded.
+Resource Module: [shaders/basicTexture.so] has been read, length: 377
+ShaderObject: Successfully linked shader program, ID: 15
+Shader Manager: Shader [4] has been loaded.
+FBO[1] status: 36053
+Render Module: Render mode is post process rendering.
+ShaderObject: Successfully linked shader program, ID: 18
+Shader Manager: Shader [0] has been loaded.
+Render Module: Generating render lists...
+ShaderBlock Manager: Preparing to generate 5 shader block.
+ShaderBlock [0]: Preparing to generate 8 render lists.
+ShaderBlock [1]: Preparing to generate 8 render lists.
+ShaderBlock [2]: Preparing to generate 8 render lists.
+ShaderBlock [3]: Preparing to generate 8 render lists.
+ShaderBlock [4]: Preparing to generate 8 render lists.
+Render Module: 5 render lists have been generated
+Render Module: 2 objects have been classified
+Render Module: Preparing splash screen
+Texture Manager: Texture '9999' has been loaded.
+ShaderObject: Successfully linked shader program, ID: 21
+Shader Manager: Shader [9999] has been loaded.
+Texture Manager: Texture '9999' has been unloaded.
+Shader Manager: Shader '9999' has been released.
+Shader Manager: Shader '0' has been released.
+Shader Manager: Shader '1' has been released.
+Shader Manager: Shader '2' has been released.
+Shader Manager: Shader '3' has been released.
+Shader Manager: Shader '4' has been released.
+Shader Manager: Shader '9999' has been released.
+Texture Manager: Texture '0' has been unloaded.
+Texture Manager: Texture '1' has been unloaded.
+Texture Manager: Texture '2' has been unloaded.
+Texture Manager: Texture '3' has been unloaded.
+Texture Manager: Texture '4' has been unloaded.
+Texture Manager: Texture '5' has been unloaded.
+Texture Manager: Texture '6' has been unloaded.
+Texture Manager: Texture '7' has been unloaded.
+Texture Manager: Texture '9999' has been unloaded.

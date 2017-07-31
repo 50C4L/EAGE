@@ -1,0 +1,248 @@
+#include "PlayState.h"
+#include <stdio.h>
+#include "../../../src/helper/OpenGL.h"
+
+#define SPEED 400.0f
+
+enum
+{
+	DEFAULT_SHADER	= 0,
+	UNIFORM_TEST_SHADER,
+	TEXTURE_DISCARD_SHADER,
+	GREY_PFX_SHADER,
+	BASIC_TEXTURE
+};
+
+PlayState* PlayState::_instance = 0;
+
+PlayState* PlayState::getInstance()
+{
+	if( !_instance )
+		_instance = new PlayState();
+
+	return _instance;
+}
+
+PlayState::PlayState()
+{
+	_player		= 0;
+	_obsticle	= 0;
+	_camera		= 0;
+	_button		= 0;
+	_title		= 0;
+	_nextBtn	= 0;
+	_background = 0;
+}
+
+PlayState::~PlayState()
+{
+}
+
+void PlayState::enterFunc()
+{
+	eage::alphaBlend( true );
+	//this->loadResFile( "data/scenes/animationTest_scene.res" );
+	eage::loadResourceIndices( "data/scenes/animationTest_scene.res", EAGE_FROM_MEMORY );
+
+	//eage::loadShaderFromFile( "data/shaders/uniformTest.so", UNIFORM_TEST_SHADER );
+	//eage::loadShaderFromFile( "data/shaders/TextureDiscarding.so", TEXTURE_DISCARD_SHADER );
+
+	// player initialization
+	_player = new Player();
+	_player->setSize( sf::Vector2f(100.0f,600.0f), sf::Vector2f(100.0f,500.0f), sf::Vector2f(200.0f,500.0f), sf::Vector2f(200.0f,600.0f) );
+	_player->setTexture( 4 );
+	_player->setLayer( 0.0f );
+	_player->setShader( BASIC_TEXTURE );
+	//_player->scaleAABB( 0.8f );
+	//_player->addAnimation( "data/objects/animations/test.fba" );
+	_player->addAnimationSet( 1 );
+
+	// static object initialization
+	_obsticle = new GameObject();
+	_obsticle->setSize( sf::Vector2f(600.0f, 400.0f), sf::Vector2f(600.0f, 300.0f), sf::Vector2f(700.0f,300.0f), sf::Vector2f(700.0f,400.0f) );
+	_obsticle->setTexture( 2 );
+	_obsticle->setLayer( 0.0f );
+	_obsticle->setShader( BASIC_TEXTURE );
+	_obsticle->setDynamic( false );
+
+	// button initialization
+	_button = new Button();
+	_button->setSize( sf::Vector2f(100.0f,200.0f), sf::Vector2f(100.0f,100.0f), sf::Vector2f(200.0f,100.0f), sf::Vector2f(200.0f,200.0f) );
+	_button->setTexture( 0 );
+	_button->setLayer( 0.5 );
+	_nextBtn = new Button();
+	_nextBtn->setSize( sf::Vector2f(900.0f,200.0f), sf::Vector2f(900.0f,100.0f), sf::Vector2f(1000.0f,100.0f), sf::Vector2f(1000.0f,200.0f) );
+	_nextBtn->setTexture( 0 );
+	_nextBtn->setLayer( 0.5 );
+
+	_camera = eage::getMainCamera();
+
+	// UI object initialization
+	_title = new Label();
+	_title->setFontSize( 20 );
+	_title->setFont( 2 );
+	_title->setFontColor( 0.0f, 1.0f, 0.0f, 1.0f );
+	_title->setText( "Collision detection, Audio, Shader and Camera control test\n"
+					 "Press 1 to focus on player\n"
+					 "Press 2 to release camera\n"
+					 "Press 3 to enter slow motion\n"
+					 "Press 4 to leave slow motion\n"
+					 "Press WASD to move character\n"
+					 "Press Space to play BGM");
+	_title->setPosition( 10.0f, 20.0f );
+
+	// Layer initialization
+	_background = new Layer( -0.5f );
+	std::vector<int> texIdlist;
+	for( int i = 0; i < 100000; ++i )
+	{
+		texIdlist.push_back( 7 );
+	}
+	_background->initialize( 100.0f, 100, 1000, sf::Vector2f(), 0, &texIdlist );
+
+	/*
+	this->addUIObject( _title );
+	this->addUIObject( _button );
+	this->addUIObject( _nextBtn );
+	this->addObject( _obsticle );
+	this->addFBAObject( _player );
+	//this->setGravity( sf::Vector2f( 0.0f, 0.0f ) );
+	*/
+	eage::appendUIObject( _title );
+	eage::appendUIObject( _button );
+	eage::appendUIObject( _nextBtn );
+	eage::appendObject( _obsticle );
+	eage::appendFBAObject( _player );
+	eage::setGravity( 0.0f, 0.0f );
+
+	//this->setRenderMode( EAGE_POST_EFFECT );
+	//this->setRenderMode( EAGE_WIREFRAME );
+	//this->setPostFXShader( 1 );
+	eage::setRenderMode(EAGE_DIRECT_RENDER);
+	eage::setPostFXShader( GREY_PFX_SHADER );
+
+	eage::findShader( UNIFORM_TEST_SHADER )->uniform( "status", 0 );
+	//float disColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	//eage::findShader( TEXTURE_DISCARD_SHADER )->uniform( "disColor", 1, disColor );
+}
+
+void PlayState::leaveFunc()
+{
+	eage::stopAllSound();
+	eage::stopMusic();
+
+	/*
+	if( _player )
+	{
+		delete _player;
+		_player = 0;
+	}
+	if( _obsticle )
+	{
+		delete _obsticle;
+		_obsticle = 0;
+	}
+	if( _button )
+	{
+		delete _button;
+		_button = 0;
+	}
+	if( _title )
+	{
+		delete _title;
+		_title = 0;
+	}
+	*/	
+}
+
+void PlayState::control()
+{
+	// player control
+	if( eage::isKeyPressed( eage::D ) )
+	{
+		_player->move( sf::Vector2f(1.0,0.0), SPEED );
+	}
+	else if( eage::isKeyPressed( eage::A ) )
+	{
+		_player->move( sf::Vector2f(-1.0,0.0), SPEED );
+	}
+	else if( eage::isKeyPressed( eage::W ) )
+	{
+		_player->move( sf::Vector2f(0.0,1.0), SPEED );
+	}
+	else if( eage::isKeyPressed( eage::S ) )
+	{
+		_player->move( sf::Vector2f(0.0,-1.0), SPEED );
+	}
+	else
+	{
+		_player->stop();
+	}
+
+	// camera focus control
+	if( eage::isKeyPressed( eage::Num1 ) )
+	{
+		_camera->follow( _player );
+	}
+	if( eage::isKeyPressed( eage::Num2 ) )
+	{
+		_camera->releaseFocus();
+	}
+	if( eage::isKeyPressed( eage::Add ) )
+	{
+		_camera->zoom( 1.05f );
+	}
+	if( eage::isKeyPressed( eage::Subtract ) )
+	{
+		_camera->zoom( 0.95f );
+	}
+
+	// music control
+	if( eage::isKeyPressed( eage::Space) )
+	{
+		eage::playMusic( 0 );
+	}
+
+	// game speed control
+	if( eage::isKeyPressed( eage::Num3) )
+	{
+		eage::setGameSpeed( 0.5f );
+		eage::setAudioSpeed( 0.5f );
+	}
+	if( eage::isKeyPressed( eage::Num4 ) )
+	{
+		eage::setGameSpeed( 1.0f );
+		eage::setAudioSpeed( 1.0f );
+	}
+
+	// pause/unpause control
+	if( eage::isKeyPressed( eage::Escape ) )
+	{
+		static bool flag = false;
+		flag = !flag;
+		eage::pauseAnimation( flag );
+		eage::pausePhysics( flag );
+
+		if( !flag ) eage::resumeAudio();
+		if( flag )	eage::pauseAudio();
+	}
+
+	_player->playAnimation( 0 );	
+
+	if( eage::isCollidedAABB( _player, _obsticle ) )
+	{
+		eage::playSound( 1 );
+		_player->react();
+	}
+
+	if( _button->isPress() )
+	{
+		this->changeState( 1 );
+		return;
+	}
+	if( _nextBtn->isPress() )
+	{
+		this->changeState( 3 );
+		return;
+	}
+}

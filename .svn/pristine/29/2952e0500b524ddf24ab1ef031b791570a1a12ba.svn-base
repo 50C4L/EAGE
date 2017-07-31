@@ -1,0 +1,123 @@
+//#include "State.h"
+#include "helper.h"
+#include "../manager/StateManager.h"
+#include "../graphics/RenderModule.h"
+#include "../resource/ResourceModule.h"
+#include "../math/PhysicsModule.h"
+
+State::State()
+{
+	_stateManPtr = 0;
+}
+
+
+State::~State()
+{
+}
+
+void State::changeState( int id )
+{
+	_stateManPtr->changeState( id );
+}
+
+void State::getManger( StateManager* sm )
+{
+	if( sm )
+		_stateManPtr = sm;
+}
+
+void State::setGravity( sf::Vector2f value )
+{
+	_pxm->setGravity( value );
+}
+
+void State::setRenderMode( EAGE_RENDER_MODE mode )
+{
+	if( _rdm )
+		_rdm->setRenderState( mode );
+}
+
+void State::setPostFXShader( int shaderId )
+{
+	if( _rdm )
+		_rdm->setPostFXShader( shaderId );
+}
+
+void State::enter( RenderModule* rdm, ResourceModule* rsm, PhysicsModule* pxm, sf::RenderWindow* rw )
+{
+	_rdm = rdm;
+	_rsm = rsm;
+	_pxm = pxm;
+	_rw  = rw;
+
+	_rsm->create();
+
+	this->enterFunc();
+
+	_rdm->create();
+}
+
+void State::leave()
+{
+	_rdm->clear();
+	_rsm->clear();
+	_pxm->clear();
+
+	this->leaveFunc();
+
+	_rdm = 0;
+	_rsm = 0;
+	_pxm = 0;
+	_rw  = 0;
+}
+
+void State::run()
+{
+	_pxm->update();
+	_rdm->render();
+}
+
+void State::loadResFile( std::string filename )
+{
+	_rsm->loadResFile( filename );
+		// recreate render lists as new resouces are loaded
+		//_rdm->create();
+}
+
+void State::addFBAObject( FBAnimObject *obj )
+{
+	//if( typeid(obj) == typeid(FBAnimObject) )
+		_rdm->addFBAnimObject( obj );
+		_pxm->addObject( obj );
+	//else
+		//printf( "<ERROR> Invalid frame based animation object detected.\n" );
+}
+
+void State::addUIObject( UIObject *obj )
+{
+	//if( typeid(obj) == typeid(UIObject) )
+		_rdm->addUIObject( obj );
+	//else
+		//printf( "<ERROR> Invalid user interface object detected.\n" );
+}
+
+void State::addObject( VisibleObject *obj )
+{
+	//if( typeid(obj) == typeid(VisibleObject) )
+		_rdm->addObj( obj );
+		_pxm->addObject( obj );
+	//else
+		//printf( "<ERROR> Invalid frame based animation object detected.\n" );
+}
+
+/*
+RenderModule* State::getRenderModule()
+{
+	return _rdm;
+}
+
+ResourceModule* State::getResourceModule()
+{
+	return _rsm;
+}
+*/

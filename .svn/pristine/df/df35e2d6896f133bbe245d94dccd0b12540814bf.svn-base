@@ -1,0 +1,85 @@
+#include "ShaderBlock.h"
+#include <stdio.h>
+
+#include "../manager/TextureManager.h"
+
+ShaderBlock::ShaderBlock()
+{
+}
+
+ShaderBlock::~ShaderBlock()
+{
+}
+
+void ShaderBlock::setName( std::string name )
+{
+	_name = name;
+}
+
+void ShaderBlock::setID( int id )
+{
+	_id = id;
+}
+
+void ShaderBlock::push( GameObject* obj )
+{
+	_objList.push_back( obj );
+}
+
+void ShaderBlock::render()
+{
+	//TextureManager* texman;
+	//texman = TextureManager::getInstance();
+	//if( _objList.empty() )	return;
+	//_listIt it;
+	//it = _objList.begin();
+	//while( it != _objList.end() )
+	//{
+	//	if( *it && (*it)->isEnable() )
+	//	{
+	//		texman->bind( (*it)->getTexture() );
+	//		//(*it)->render();
+	//		glVertexPointer( 3, GL_FLOAT, 0, (*it)->_vertices.data() );
+	//		glTexCoordPointer( 2, GL_FLOAT, 0, (*it)->_texcoords.data() );
+	//		glDrawArrays( GL_TRIANGLES, 0, 6 );
+	//	}
+	//	++it;
+	//}
+	//TextureManager::getInstance()->bind( 0 );
+	std::for_each( _objList.begin(), _objList.end(), Renderer() );
+}
+
+void ShaderBlock::clear()
+{
+	_name.clear();
+	if( !_objList.empty() )
+	{
+		std::for_each( _objList.begin(), _objList.end(), Deallocator() );
+		_objList.clear();
+	}
+}
+
+void ShaderBlock::sort()
+{
+	if( !_objList.empty() )
+		//std::sort( _objList.begin(), _objList.end(), this->_lessLayer );
+		_objList.sort( LessLayer() );
+}
+
+std::string ShaderBlock::getName()
+{
+	if( !_name.empty() )
+		return _name;
+	return 0;
+}
+
+int ShaderBlock::getID()
+{
+	return _id;
+}
+
+
+//bool ShaderBlock::_lessLayer( const GameObject *obj1, const GameObject *obj2 )
+//{
+//	return obj1->getLayer() < obj2->getLayer();
+//}

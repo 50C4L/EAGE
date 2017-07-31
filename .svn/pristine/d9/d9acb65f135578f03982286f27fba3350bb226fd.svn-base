@@ -1,0 +1,88 @@
+#include "../helper/helper.h"
+
+AABB::AABB()
+{
+	flag = 0;
+}
+
+AABB::~AABB()
+{
+}
+
+void AABB::addVertex( sf::Vector2f vec )
+{
+	if( flag == 0)
+	{
+		_max = vec;
+		_min = vec;
+		flag = 1;
+	}
+	if( vec.x > _max.x )	_max.x = vec.x;
+	if( vec.y > _max.y )	_max.y = vec.y;
+	if( vec.x < _min.x )	_min.x = vec.x;
+	if( vec.y < _min.y )	_min.y = vec.y;	
+}
+
+void AABB::translate( sf::Vector2f v )
+{
+	_max = _max + v;
+	_min = _min + v;
+}
+
+void AABB::scale( float value )
+{
+	if( value == 1.0f )
+	{
+		_max = _max * value;
+		_min = _min * value;
+	}
+	else if( value < 1.0f )
+	{
+		_max = _max * value;
+		_min = _min * (1.0f+(1.0f-value));
+	}
+	else if( value > 1.0f )
+	{
+		_max = _max * (1.0f+value);
+		_min = _min * value;
+	}
+
+	printf( "AABB is scaled to max[%.2f, %.2f], min[%.2f, %.2f].\n", _max.x,_max.y,_min.x,_min.y );
+}
+
+bool AABB::judgePoint( sf::Vector2f pt )
+{
+	if( pt.x <= _max.x && 
+		pt.y <= _max.y &&
+		pt.x >= _min.x &&
+		pt.y >= _min.y )
+		return true;
+	else return false;
+}
+
+bool AABB::isCollide( sf::Vector2f pt )
+{
+	if( pt.x <= _max.x && 
+		pt.y <= _max.y &&
+		pt.x >= _min.x &&
+		pt.y >= _min.y )
+		return true;
+	else return false;
+}
+
+bool AABB::isCollide( AABB box )
+{
+	if( _max.x < box.getMin().x || _min.x > box.getMax().x )	return false;
+	if( _max.y < box.getMin().y || _min.y > box.getMax().y )	return false;
+	return true;
+}
+
+sf::Vector2f AABB::getMax()
+{
+	return _max;
+}
+
+sf::Vector2f AABB::getMin()
+{
+	return _min;
+}

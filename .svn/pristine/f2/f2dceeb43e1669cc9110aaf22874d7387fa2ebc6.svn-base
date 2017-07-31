@@ -1,0 +1,12 @@
+#ifndef FPS_H
+#define FPS_H
+
+#include <SFML/System/Vector2.hpp>
+
+namespace eage
+{
+	double getFPS();	// causes unknown problem at the beginning
+	float getDistanceSquare( sf::Vector2f ptA, sf::Vector2f ptB );
+}
+
+#endif

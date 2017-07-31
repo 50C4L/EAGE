@@ -1,0 +1,31 @@
+#include "LineEmitter.h"
+
+LineEmitter::LineEmitter()
+{
+}
+
+LineEmitter::~LineEmitter()
+{
+}
+
+void LineEmitter::initialize()
+{
+	PARTICLE part;
+	for( int i = 0; i < 10; i++ )
+	{
+		part.position.pos.x = 450.0f;
+		part.position.pos.y = 450.0f;
+		part.position.layer = 0.0f;
+		part.texcoord.s		= 0.0f;
+		part.texcoord.t		= 0.0f;
+		part.color.r		= 1.0f;
+		part.color.g		= 0.0f;
+		part.color.b		= 0.0f;
+		part.color.a		= 1.0f;
+		_particles.push_back( part );
+	}
+}
+
+void LineEmitter::update()
+{
+}

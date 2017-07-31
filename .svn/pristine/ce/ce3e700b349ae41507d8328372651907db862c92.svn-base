@@ -1,0 +1,88 @@
+#ifndef _RENDERMODULE_H
+#define _RENDERMODULE_H
+
+#include "../helper/Module.h"
+#include "../helper/helper.h"
+#include "../manager/ShaderBlockManager.h"
+#include "../manager/UIObjectManager.h"
+#include "../manager/AnimationManager.h"
+
+class TextureManager;
+class ShaderManager;
+class GameObject;
+class ShaderObject;
+class FrameBufferObject;
+
+class RenderModule:public Module
+{
+	friend void				eage::removeUIWidget(std::shared_ptr<sfg::Widget> widget);
+	friend sfg::Desktop*	eage::getUIDesktop();
+	friend sf::Vector2f		eage::getResolutionScale();
+
+public:
+	static RenderModule* getInstance();
+	~RenderModule();
+
+	bool initialize( TextureManager* tmPtr );
+	void create();
+	void shutdown();
+	void appendSFGUIWidget( std::shared_ptr<sfg::Widget> widget );
+	void addObj( GameObject* obj );
+	void addUIObject( UIObject* obj );
+	void addFBAnimObject( FBAnimObject* obj );
+	void addShaderObject( ShaderObject* obj );
+	void setRenderState( EAGE_RENDER_MODE mode );
+	void setPostFXShader( int shaderId );
+	void setDesignResolution( int width, int height );
+	void genScaleRatio();
+	void render();
+	void clearBuffers();
+	void clear();
+	void reshape( sf::RenderWindow* );
+	void alphaBlend( bool flag );
+	void gether( double frameInterval );
+	void renderGUI( float sec );
+	bool renderSplash( float deltaTime, float length );
+	void updateVertex( int shaderBlock, int renderList, int renderOffset, VertexAttribute vert );
+	void updateVertex( int shaderBlock, int renderList, int renderOffset, Texcoord uv );
+	void updateVertex( int shaderBlock, int renderList, int renderOffset, Color color );
+	void enableStates();
+	void disableStates();
+	Camera* getMainCamera();
+
+private:
+	RenderModule();
+	void _update();
+	void _renderToFullScreenQuad( GLuint renderTargetTexture );
+
+	static RenderModule*		_instance;
+
+	TextureManager*				_tmPtr;
+	ShaderManager*				_shaMan;
+	ShaderBlockManager*			_rlMan;
+	UIObjectManager*			_uioMan;
+	AnimationManager*			_aniMan;
+	sf::RenderWindow*			_wnd;
+	Camera*						_mainCamera;
+	float						_fps;
+	double						_frameInterval;
+	float						_aspect;
+	bool						_isListReady;
+	bool						_isAlphaBlend;
+	double						_screenWidth, _screenHeight;
+	int							_designWidth, _designHeight;
+	float						_widthScale, _heightScale;
+
+	// post FX
+	FrameBufferObject*			_postFBO;
+	int							_postShader;
+	GameObject*					_fullScreenQuad;
+	bool						_isPostFX;
+
+	// SFGUI
+	sfg::SFGUI*					_sfgui;
+	sfg::Desktop*				_desk;
+
+};	// class RenderModule
+
+#endif

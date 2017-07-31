@@ -1,0 +1,47 @@
+﻿Build started 2016/3/12 8:15:05.
+     1>Project "I:\Projects\EAGE\EAGE_Test\EAGE_Test.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\obj\\" /Fd"Debug\obj\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt src\game\LineEmitter.cpp src\game\MenuState.cpp src\game\ParticleState.cpp src\game\PhyxState.cpp src\game\player.cpp src\game\PlayState.cpp src\game\SkeletonState.cpp src\main.cpp
+         main.cpp
+         SkeletonState.cpp
+     1>i:\projects\eage\eage_test\src\game\skeletonstate.cpp(128): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>i:\projects\eage\eage_test\src\game\skeletonstate.cpp(129): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+         PlayState.cpp
+         player.cpp
+         PhyxState.cpp
+         ParticleState.cpp
+         MenuState.cpp
+         LineEmitter.cpp
+         Generating Code...
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"I:\Projects\EAGE\Debug\EAGE_Test.exe" /INCREMENTAL /NOLOGO /LIBPATH:"I:\Source Code\SFML-2.3.2\lib" /LIBPATH:"I:\Source Code\Box2D_v2.2.1\Box2D_v2.2.1\Build\vs2010\bin\Debug" Box2D.lib "sfgui-d.lib" "sfml-graphics-d.lib" "sfml-window-d.lib" "sfml-system-d.lib" EAGE.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"I:\Projects\EAGE\Debug\EAGE_Test.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"I:\Projects\EAGE\Debug\EAGE_Test.lib" /MACHINE:X86 Debug\obj\LineEmitter.obj
+         Debug\obj\MenuState.obj
+         Debug\obj\ParticleState.obj
+         Debug\obj\PhyxState.obj
+         Debug\obj\player.obj
+         Debug\obj\PlayState.obj
+         Debug\obj\SkeletonState.obj
+         Debug\obj\main.obj
+            Creating library I:\Projects\EAGE\Debug\EAGE_Test.lib and object I:\Projects\EAGE\Debug\EAGE_Test.exp
+         EAGE_Test.vcxproj -> I:\Projects\EAGE\Debug\EAGE_Test.exe
+       PostBuildEvent:
+         copy "I:\Source Code\SFML-2.3.2\bin\sfml-window-d-2.dll" "I:\Projects\EAGE\Debug\"
+         copy "I:\Source Code\SFML-2.3.2\bin\sfml-system-d-2.dll" "I:\Projects\EAGE\Debug\"
+         copy "I:\Source Code\SFML-2.3.2\bin\sfml-graphics-d-2.dll" "I:\Projects\EAGE\Debug\"
+         copy "I:\Source Code\SFML-2.3.2\bin\sfml-audio-d-2.dll" "I:\Projects\EAGE\Debug\"
+         copy "I:\Source Code\SFML-2.3.2\bin\openal32.dll" "I:\Projects\EAGE\Debug\"
+         copy "E:\PhysFS\bin\debug\physfs.dll" "I:\Projects\EAGE\Debug\"
+         copy "I:\Source Code\SFGUI-0.3.0\build\lib\Debug\sfgui-d.dll" "I:\Projects\EAGE\Debug\"
+         :VCEnd
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+         已复制         1 个文件。
+     1>Done Building Project "I:\Projects\EAGE\EAGE_Test\EAGE_Test.vcxproj" (Rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:05.79

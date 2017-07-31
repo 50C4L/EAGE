@@ -1,0 +1,49 @@
+#include "MenuState.h"
+#include <stdio.h>
+
+
+MenuState* MenuState::_instance = NULL;
+
+MenuState* MenuState::getInstance()
+{
+	if( !_instance )
+		_instance = new MenuState();
+
+	return _instance;
+}
+
+MenuState::MenuState()
+{
+	_test = 0;
+}
+
+MenuState::~MenuState()
+{
+}
+
+void MenuState::enterFunc()
+{
+	_test = new Button();
+	_test->setSize( sf::Vector2f(100.0f,200.0f), sf::Vector2f(100.0f,100.0f), sf::Vector2f(200.0f,100.0f), sf::Vector2f(200.0f,200.0f) );
+	_test->setTexture( 0 );
+	_test->setLayer( 0.0 );
+
+	this->addUIObject( _test );
+}
+
+void MenuState::leaveFunc()
+{
+	if( _test )
+	{
+		delete _test;
+		_test = 0;
+	}
+}
+
+void MenuState::control()
+{
+	if( _test->isPress() )
+	{
+		this->changeState( 2 );
+	}
+}

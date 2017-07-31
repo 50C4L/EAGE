@@ -1,0 +1,111 @@
+#include "AudioManager.h"
+
+#define DEFAULT_SOUND 0
+#define DEFAULT_MUSIC 0
+
+AudioManager* AudioManager::_instance	= 0;
+
+AudioManager* AudioManager::getInstance()
+{
+	if( !_instance )	_instance = new AudioManager();
+	return _instance;
+}
+
+
+AudioManager::AudioManager()
+{
+	//this->loadSoundFromFile( 0, "data/sounds/button_01.wav" );
+}
+
+AudioManager::~AudioManager()
+{
+	this->clear();
+}
+
+int AudioManager::loadSoundFromFile( int id, std::string filePath )
+{
+	std::map<int,sf::SoundBuffer*>::iterator itr = _soundList.find( id );
+	// if sound not been loaded
+	if( itr == _soundList.end() )
+	{
+		sf::SoundBuffer* soundBuffer = new sf::SoundBuffer();
+		// cannot open file
+		if( !soundBuffer->loadFromFile( filePath ) )
+		{
+			delete soundBuffer;
+			printf( "Audio Manager: <ERROR> Failed to load audio file [%s]\n", filePath.c_str() );
+			return -1;
+		}
+		else
+		{
+			// correct iterator's postion and insert new data
+			std::map<int,sf::SoundBuffer*>::iterator res =
+				_soundList.insert( std::pair<int,sf::SoundBuffer*>( id, soundBuffer ) ).first;
+			return res->first;
+		}
+	}
+	else
+	{
+		return itr->first;
+	}
+}
+
+int AudioManager::loadMusicFromFile( int id, std::string filePath )
+{
+	std::map<int,sf::Music*>::iterator itr = _musicList.find( id );
+	// if music not been loaded
+	if( itr == _musicList.end() )
+	{
+		sf::Music* music = new sf::Music();
+		// cannot open file
+		if( !music->openFromFile( filePath ) )
+		{
+			delete music;
+			printf( "Audio Manager: <ERROR> Failed to load audio file [%s]\n", filePath.c_str() );
+			return -1;
+		}
+		else
+		{
+			// correct iterator's position and insert new data
+			std::map<int,sf::Music*>::iterator res = 
+				_musicList.insert( std::pair<int,sf::Music*>( id, music ) ).first;
+			return res->first;
+		}
+	}
+	// this music had been loaded
+	else
+	{
+		return itr->first;
+	}
+}
+
+sf::SoundBuffer* AudioManager::getSound( int id )
+{
+	if( _soundList.find( id ) != _soundList.end() )
+		return _soundList[id];
+	else
+		return _soundList[DEFAULT_SOUND];
+}
+
+sf::Music* AudioManager::getMusic( int id )
+{
+	if( _musicList.find( id ) != _musicList.end() )
+		return _musicList[id];
+	else
+		return _musicList[DEFAULT_MUSIC];
+}
+
+void AudioManager::clear()
+{
+	if( !_musicList.empty() )
+	{
+		std::for_each( _musicList.begin(), _musicList.end(), Deallocator<sf::Music*>() );
+		_musicList.clear();
+	}
+	if( !_soundList.empty() )
+	{
+		std::for_each( _soundList.begin(), _soundList.end(), Deallocator<sf::SoundBuffer*>() );
+		_soundList.clear();
+	}
+}
+

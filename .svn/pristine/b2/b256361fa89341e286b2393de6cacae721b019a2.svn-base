@@ -1,0 +1,64 @@
+#include "FontManager.h"
+#include <stdio.h>
+
+#define DEFAULT_FONT 0
+
+FontManager* FontManager::_instance = 0;
+
+FontManager::FontManager()
+{
+	_fontMem	= 0;
+	_num		= 0;
+	_index		= 0;
+}
+
+FontManager::~FontManager()
+{
+}
+
+FontManager* FontManager::getInstance()
+{
+	if( !_instance ) _instance = new FontManager();
+	return _instance;
+}
+
+void FontManager::create( int num )
+{
+	_num = num;
+	_fontMem = new sf::Font[num];
+	printf( "Font Manager: %d font instances have been created.\n", _num );
+}
+
+bool FontManager::loadFromFile( std::string filename, int id )
+{
+	if( _index >= _num )	return false;
+	if( !_fontMem[_index].loadFromFile( filename ) )	return false;
+
+	_fontList.insert( std::pair<int,sf::Font*>( id, &_fontMem[_index] ) );
+	printf( "Font Manager: Font '%d' has been loaded.\n", id );
+	_index++;
+	return true;
+}
+
+sf::Font* FontManager::getFont( int id )
+{
+	if( _fontList.find( id ) != _fontList.end() )
+		return _fontList[id];
+	else
+		return 0;
+}
+
+void FontManager::clear()
+{
+	if( !_fontList.empty() )
+	{
+		_fontList.clear();
+		printf( "Font Manager: Fonts list is cleared.\n" );
+	}
+	if( _fontMem )
+	{
+		//delete _fontMem;
+		_index = 0;
+		_fontMem = 0;
+	}
+}

@@ -1,0 +1,91 @@
+#include "AnimationManager.h"
+
+void eage::pauseAnimation( bool value )
+{
+	//if( AnimationManager::_instance )
+		//AnimationManager::_instance->pause( value );
+	AnimationManager::getInstance()->pause( value );
+}
+
+AnimationManager* AnimationManager::_instance = 0;
+
+AnimationManager::AnimationManager()
+{
+	_isPause	= false;
+	_gameSpeed	= 1.0f;
+}
+
+
+AnimationManager::~AnimationManager()
+{
+}
+
+AnimationManager* AnimationManager::getInstance()
+{
+	if( !_instance )	_instance = new AnimationManager();
+	return _instance;
+}
+
+void AnimationManager::setSpeed( float value )
+{
+	_gameSpeed = value;
+}
+
+void AnimationManager::addFBObject( FBAnimObject* obj )
+{
+	if( obj )
+		_objectList.push_back( obj );
+	else
+		printf( "<ERROR> Animation Manager: Invalid Frame Based Animation Object.\n" );
+}
+
+bool AnimationManager::loadFromMemory( char* data, int id )
+{
+	std::map<int,char*>::iterator itr = _animationList.find( id );
+	if( itr == _animationList.end() )
+	{
+		if( data )
+		{
+			std::map<int,char*>::iterator res = _animationList.insert( std::pair<int,char*>( id, data ) ).first;
+			return true;
+		}
+	}
+	return false;
+}
+
+char* AnimationManager::find( int id )
+{
+	if( _animationList.find( id ) != _animationList.end() )
+		return _animationList[id];
+	else
+		return 0;
+}
+
+void AnimationManager::update( float fps )
+{
+	if( !_isPause )
+	{
+		std::list<FBAnimObject*>::iterator it = _objectList.begin();
+		while( it != _objectList.end() )
+		{
+			(*it)->update( fps / _gameSpeed );
+			++it;
+		}
+	}
+}
+
+void AnimationManager::clear()
+{
+	_objectList.clear();
+	if( !_animationList.empty() )
+	{
+		std::for_each( _animationList.begin(), _animationList.end(), Deallocator<char*>() );
+		_animationList.clear();
+	}
+}
+
+void AnimationManager::pause( bool value )
+{
+	_isPause = value;
+}
+

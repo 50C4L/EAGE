@@ -1,0 +1,65 @@
+#include "../helper/helper.h"
+
+Layer::Layer( float value ):_value( value)
+{
+	_totalWidth		= 0.0f;
+	_totalHeight	= 0.0f;
+	_herTileNum		= 0;
+	_verTileNum		= 0;
+}
+
+bool Layer::initialize( float tileSize,			unsigned int herTileNum, 
+					    unsigned int verTileNum,	sf::Vector2f startCoord, 
+						int shaderID, const std::vector<int> *texIdList )
+{
+	_tileSize		= tileSize;
+	_herTileNum		= herTileNum ;
+	_verTileNum		= verTileNum ;
+
+	// generate grid of VisibleObjects
+	unsigned int tileCount		= _herTileNum * _verTileNum;
+	unsigned int columCounter	= 0;
+	unsigned int texIdListSize  = texIdList->size();
+	sf::Vector2f groundZero		= startCoord;
+
+	if( texIdListSize != tileCount )
+		printf( "<WARNING> Tile number and texture id number not match. Remining tiles will ues default texture.\n" );
+
+	for( unsigned int i = 0; i < tileCount; ++i )
+	{
+		VisibleObject *tile = new VisibleObject();
+		tile->setSize( sf::Vector2f( startCoord.x,			 startCoord.y+_tileSize ),
+					   sf::Vector2f( startCoord.x,			 startCoord.y ),
+					   sf::Vector2f( startCoord.x+_tileSize, startCoord.y ),
+					   sf::Vector2f( startCoord.x+_tileSize, startCoord.y+_tileSize ) );
+		tile->setShader( shaderID );
+		tile->setLayer( _value );
+		tile->setDynamic( false );
+		if( i < texIdListSize )
+			tile->setTexture( texIdList->at(i) );
+
+		++columCounter;
+		startCoord.x += _tileSize;
+
+		// if this row is filled
+		if( columCounter >= _herTileNum )
+		{
+			// move to upper row's letf bottom point
+			startCoord.x = groundZero.x;
+			startCoord.y += _tileSize;
+
+			columCounter = 0;
+		}
+
+		// append object to renderer
+		_tileList.push_back( tile );
+		eage::appendObject( tile );
+	}
+
+	return true;
+}
+
+Layer::~Layer()
+{
+}
+

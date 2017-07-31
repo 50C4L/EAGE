@@ -1,0 +1,58 @@
+#ifndef _RESOURCEMODULE_H
+#define _RESOURCEMODULE_H
+
+#include "../manager/FontManager.h"
+#include "../manager/TextureManager.h"
+#include "../manager/AudioManager.h"
+#include "../helper/helper.h"
+#include <physfs.h>
+#include <string>
+
+#define MAX_RESOURCE_NAME 32
+#define MAX_SOUND_CHANNEL 16
+
+class ResourceModule
+{
+public:
+	static ResourceModule* getInstance();
+	~ResourceModule();
+
+	// test
+	//void loadZipFile( std::string filename );
+	//
+
+	bool			initialize();
+	bool			loadResFile( std::string filename, EAGE_RESOURCE_MODE mode );
+	char*			findData( std::string filename, std::size_t &size );
+	void			shutdown();
+	void			create();
+	void			clear();
+
+	void			playSound( int id );
+	void			playMusic( int id );
+	void			stopAllSound();
+	void			stopMusic();
+	void			pauseAudio();
+	void			setAudioPitch( float value );
+
+	TextureManager*	getTexMan();
+	FontManager*	getFontMan();
+
+protected:
+	ResourceModule();
+
+private:
+	static ResourceModule*	_instance;
+
+	TextureManager*		_texman;
+	FontManager*		_fontman;
+	AudioManager*		_soundMan;
+
+	sf::Sound			_currentSound[MAX_SOUND_CHANNEL];
+	// only one music can be played at a time
+	int					_currentMusic;
+	float				_audioPitch;
+
+};	// class ResourceModule
+
+#endif

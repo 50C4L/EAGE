@@ -1,0 +1,55 @@
+#ifndef _RENDERLIST_H
+#define _RENDERLIST_H
+
+#include <list>
+#include "../helper/helper.h"
+#include "../helper/OpenGL.h"
+
+class RenderList
+{
+public:
+	RenderList();
+	~RenderList();
+
+	void setId( int id );
+	void push( GameObject* obj );
+	void render();
+	void clear();
+	int  getId();
+
+private:
+	int									_texId; // texture id from THE ENGINE, NOT OPENGL
+	std::list<GameObject*>				_staticList;
+	std::list<GameObject*>				_dynamicList;
+	std::vector<VertexAttribute>		_vertices;
+
+	struct DynamicRenderer
+	{
+		void operator()( GameObject* p )
+		{
+			p->render();
+		}
+	};
+
+	struct Deallocator
+	{
+		void operator()( GameObject* p )
+		{
+			if( p )
+			{
+				delete p;
+				p = 0;
+			}
+		}
+	};
+
+	struct LessLayer
+	{
+		bool operator()( const GameObject* obj1, const GameObject* obj2 )
+		{
+			return obj1->getLayer() < obj2->getLayer();
+		}
+	};
+};
+
+#endif

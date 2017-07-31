@@ -1,0 +1,509 @@
+#include "ResourceModule.h"
+#include "../manager/AnimationManager.h"
+#include "../manager/ShaderManager.h"
+#include <fstream>
+
+void eage::playSound( int id )
+{
+	//ResourceModule::_instance->playSound( id );
+	ResourceModule::getInstance()->playSound( id );
+}
+
+void eage::playMusic( int id )
+{
+	//ResourceModule::_instance->playMusic( id );
+	ResourceModule::getInstance()->playMusic( id );
+}
+
+void eage::stopAllSound()
+{
+	//ResourceModule::_instance->stopAllSound();
+	ResourceModule::getInstance()->stopAllSound();
+}
+
+void eage::stopMusic()
+{
+	//ResourceModule::_instance->stopMusic();
+	ResourceModule::getInstance()->stopMusic();
+}
+
+void eage::pauseAudio()
+{
+	//ResourceModule::_instance->pauseAudio();
+	ResourceModule::getInstance()->pauseAudio();
+}
+
+void eage::setAudioSpeed( float value )
+{
+	ResourceModule::getInstance()->setAudioPitch( value );
+}
+
+bool eage::loadResourceIndices( std::string filename, EAGE_RESOURCE_MODE mode )
+{
+	return ResourceModule::getInstance()->loadResFile( filename, mode );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ResourceModule* ResourceModule::_instance = 0;
+
+ResourceModule* ResourceModule::getInstance()
+{
+	if( !_instance )	_instance = new ResourceModule();
+	return _instance;
+}
+
+ResourceModule::ResourceModule()
+{
+	_texman				= 0;
+	_fontman			= 0;
+	_soundMan			= 0;
+	_currentMusic		= -1;
+	_audioPitch			= 1.0f;
+}
+
+ResourceModule::~ResourceModule()
+{
+}
+
+bool ResourceModule::initialize()
+{
+	printf( "Resource Module: Instancing texture manager...\n" );
+	_texman = TextureManager::getInstance();
+	printf( "Resource Module: Instancing font manager...\n" );
+	_fontman = FontManager::getInstance();
+	printf( "Resource Module: Instancing sound buffer manager...\n" );
+	_soundMan = AudioManager::getInstance();
+
+	printf( "Resource Module: Initializing PhysicsFS...\n" );
+	if( PHYSFS_init( NULL ) )
+	{
+		PHYSFS_addToSearchPath( "data/resources.epk", 0 );
+		return true;
+	}
+	else
+	{
+		printf( "<ERROR> Resource Module: Failed to initializ PhysicsFS.\n" );
+		return false;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+/*
+void ResourceModule::loadZipFile( std::string filename )
+{
+	PHYSFS_addToSearchPath( filename.c_str(), 0 );
+	if( PHYSFS_exists( "two.png" ) )
+	{
+		printf( "PHYSFS: Found relvant file.\n" );
+
+		PHYSFS_file* file = PHYSFS_openRead( "two.png" );
+		int file_size = (int)PHYSFS_fileLength( file );
+		char* buffer;
+		buffer = new char[file_size];
+		int length_read = (int)PHYSFS_read( file, buffer, 1, file_size );
+		printf( "PHYSFS: File length read: %d\n", length_read );
+		if( !_texman->loadFromMemory( buffer, file_size, 22, GL_NEAREST ) )
+			printf( "!!!!!!!!!!!!!!!!!!!!!!!!" );
+		PHYSFS_close( file );
+	}
+	else
+		printf( "PHYSFS: Shit.\n" );
+
+
+}
+*/
+///////////////////////////////////////////////////////////////////////////
+char* ResourceModule::findData( std::string filename, std::size_t &size )
+{
+	if( PHYSFS_exists( filename.c_str() ) )
+	{
+		PHYSFS_file* file = PHYSFS_openRead( filename.c_str() );
+		size = (unsigned int)PHYSFS_fileLength( file );
+		char* buffer;
+		buffer = new char[size+1];
+		memset( buffer, 0, size+1 );
+		int length_read = (int)PHYSFS_read( file, buffer, 1, size );
+
+		printf( "Resource Module: [%s] has been read, length: %d\n", filename.c_str(), length_read );
+		buffer[size] = '\0';
+		PHYSFS_close( file );
+
+		return buffer;
+	}
+	else
+	{
+		printf( "Resource Module: <ERROR> Failed to find data [%s] in resource package.\n", filename.c_str() );
+		return 0;
+	}
+}
+
+bool ResourceModule::loadResFile( std::string filename, EAGE_RESOURCE_MODE mode )
+{
+	printf( "Resource Module: Prepare to load *.res file [%s]\n", filename.c_str() );
+	// if the *.res file is valid
+	std::ifstream file;
+	file.open( filename );
+	if( file.fail() )	return false;
+
+	char key[MAX_RESOURCE_NAME];
+
+	while( !file.eof() )
+	{
+		file >> key;
+
+		// load fonts
+		if( strcmp( key, "[FONTS]" ) == 0 )
+		{
+			// get params
+			char name[MAX_RESOURCE_NAME];
+			char path[256];
+			while(1)
+			{
+				// resource name
+				file >> name;
+				if( strcmp( name, "$" ) == 0 ) break;
+				// resource path
+				file.get();
+				file.getline( path, sizeof( path ) );
+				if( strcmp( path, "$" ) == 0 ) break;
+
+				if( mode == EAGE_FROM_MEMORY )
+				{
+					char* data;
+					std::size_t size;
+					data = findData( path, size );
+					_fontman->loadFromMemory( data, size, atoi(name) );
+				}
+				else if( mode == EAGE_FROM_FILE )
+					_fontman->loadFromFile( path, atoi(name) );
+			}
+			continue;
+		}
+
+		// load textures
+		else if( strcmp( key, "[SAMPLE]" ) == 0 )
+		{
+			char name[MAX_RESOURCE_NAME];
+			char path[256];
+			char filter[16];
+			while(1)
+			{
+				// texture name
+				file >> name;
+				if( strcmp( name, "$" ) == 0 ) break;
+				// texture path
+				file >> path;
+				if( strcmp( path, "$" ) == 0 ) break;
+				// texture filter
+				file >> filter;
+				if( strcmp( path, "$" ) == 0 ) break;
+
+				char* data = 0;
+				std::size_t size;
+
+				if( mode == EAGE_FROM_MEMORY )	
+					data = findData( path, size );
+				
+				if( strcmp( filter, "LINEAR" ) == 0 )
+				{	
+						_texman->loadFromMemory( data, size, atoi(name), GL_LINEAR );
+					if( mode == EAGE_FROM_FILE )
+						_texman->loadFromFile( path, atoi(name), GL_LINEAR );
+				}
+				else if( ( strcmp( filter, "NEAREST" ) == 0 ) )
+				{
+					if( mode == EAGE_FROM_MEMORY )
+						_texman->loadFromMemory( data, size, atoi(name), GL_NEAREST );
+					if( mode == EAGE_FROM_FILE )
+						_texman->loadFromFile( path, atoi(name), GL_NEAREST );
+				}
+
+				if(data)
+					delete data;
+			}
+			continue;
+		}
+		
+		// load sound effects
+		else if( strcmp( key, "[SOUND]") == 0 )
+		{
+			char name[MAX_RESOURCE_NAME];
+			char path[256];
+			while(1)
+			{
+				// sound id
+				file >> name;
+				if( strcmp( name, "$" ) == 0 ) break;
+				// sound path
+				file >> path;
+				if( strcmp( path, "$" ) == 0 ) break;
+
+				
+				if( mode == EAGE_FROM_FILE )
+					int id = _soundMan->loadSoundFromFile( atoi(name), path );
+				
+				if( mode == EAGE_FROM_MEMORY )
+				{
+					char* data;
+					std::size_t size;
+					data = findData( path, size );
+
+					if( data )
+					{
+						int id = _soundMan->loadSoundFromMemory( data, size, atoi(name) );
+						if( id == -1 )
+							printf( "Resource Module: <ERROR> Failed to load sound data [%s] from memory.\n", path );
+						delete data;
+					}
+				}
+				
+			}
+			continue;
+		}
+		
+		// load back ground music
+		else if( strcmp( key, "[MUSIC]") == 0 )
+		{
+			char name[MAX_RESOURCE_NAME];
+			char path[256];
+			while(1)
+			{
+				// sound id
+				file >> name;
+				if( strcmp( name, "$" ) == 0 ) break;
+				// sound path
+				file >> path;
+				if( strcmp( path, "$" ) == 0 ) break;
+
+				if( mode == EAGE_FROM_FILE )
+					int id = _soundMan->loadMusicFromFile( atoi(name), path );
+
+				if( mode == EAGE_FROM_MEMORY )
+				{
+					char* data;
+					std::size_t size;
+					data = findData( path, size );
+
+					
+					if( data )
+					{
+						int id = _soundMan->loadMusicFromMemory( data, size, atoi(name) );
+						if( id == -1 )
+							printf( "Resource Module: <ERROR> Failed to load music data [%s] from memory.\n", path );
+					}
+				}
+			}
+			continue;
+		}
+
+		// load animation sets
+		else if( strcmp( key, "[ANIMATION]") == 0 )
+		{
+			char name[MAX_RESOURCE_NAME];
+			char path[256];
+			while(1)
+			{
+				// sound id
+				file >> name;
+				if( strcmp( name, "$" ) == 0 ) break;
+				// sound path
+				file >> path;
+				if( strcmp( path, "$" ) == 0 ) break;
+
+				if( mode == EAGE_FROM_FILE )
+					AnimationManager::getInstance()->loadFromFile( path, atoi(name) );
+
+				if( mode == EAGE_FROM_MEMORY )
+				{
+					char* data;
+					std::size_t size;
+					data = findData( path, size );
+
+					if( data )
+					{
+						if( !AnimationManager::getInstance()->loadFromMemory( data, atoi(name) ) )
+							printf( "Resource Module: <ERROR> Failed to load animation set [%s] from memory.\n", path );
+					}
+				}	
+			}
+			continue;
+		}
+
+		// load shader objects
+		else if( strcmp( key, "[SHADER]" ) == 0 )
+		{
+			char name[MAX_RESOURCE_NAME];
+			char path[256];
+
+			while(1)
+			{
+				// shader id
+				file >> name;
+				if( strcmp( name, "$" ) == 0 ) break;
+				// shader path
+				file >> path;
+				if( strcmp( path, "$" ) == 0 ) break;
+
+				if( mode == EAGE_FROM_FILE )
+					ShaderManager::getInstance()->loadFromFile( path, atoi(name) );
+
+				if( mode == EAGE_FROM_MEMORY )
+				{
+					char* data;
+					data = 0;
+					std::size_t size;
+					data = findData( path, size );
+
+					if( data )
+					{
+						if( !ShaderManager::getInstance()->loadFromMemory( data, atoi(name) ) )
+							printf( "Resource Module: <ERROR> Failed to load shader object [%s] from memory.\n", path );
+					}
+				}	
+			}
+			continue;
+		}
+	}
+
+	return true;
+}
+
+void ResourceModule::playSound( int id )
+{
+	int availChannel = -1;
+	for( int i = 0; i < MAX_SOUND_CHANNEL; i++ )
+	{
+		// check for available sound channel
+		if( _currentSound[i].getStatus() != sf::Sound::Playing )
+		{
+			// found available channel
+			availChannel = i;
+			break;
+		}
+	}
+
+	// if there is an available channel
+	if( availChannel != -1 )
+	{
+		_currentSound[availChannel].setBuffer(*_soundMan->getSound( id ));
+		_currentSound[availChannel].play();
+	}
+
+	// no available channel, do nothing
+}
+
+void ResourceModule::playMusic( int id )
+{
+	sf::Music* music;
+	music = _soundMan->getMusic( id );
+
+	// if there is music playing already
+	if( _currentMusic != -1 )
+	{
+		sf::Music* priorMusic = _soundMan->getMusic( _currentMusic );
+		if( priorMusic->getStatus() == sf::Sound::Playing )
+		{
+			priorMusic->stop();
+		}
+	}
+
+	_currentMusic = id;
+	music->setLoop( true );
+	music->setPitch( _audioPitch );
+	music->play();
+}
+
+void ResourceModule::setAudioPitch( float value )
+{
+	_audioPitch = value;
+
+	if( _currentMusic != -1 )
+	{
+		sf::Music* priorMusic = _soundMan->getMusic( _currentMusic );
+		if( priorMusic->getStatus() == sf::Sound::Playing )
+		{
+			priorMusic->setPitch( _audioPitch );
+		}
+	}
+}
+
+void ResourceModule::stopAllSound()
+{
+	for( int i = 0; i < MAX_SOUND_CHANNEL; i ++ )
+	{
+		_currentSound[i].stop();
+	}
+}
+
+void ResourceModule::stopMusic()
+{
+	sf::Music* music = _soundMan->getMusic( _currentMusic );
+	if( music )
+	{
+		if( music->getStatus() == sf::Sound::Playing )
+		{
+			music->stop();
+		}
+	}
+}
+
+void ResourceModule::pauseAudio()
+{
+	for( int i = 0; i < MAX_SOUND_CHANNEL; i ++ )
+	{
+		_currentSound[i].pause();
+	}
+
+	sf::Music* music = _soundMan->getMusic( _currentMusic );
+	if( music->getStatus() == sf::Sound::Playing )
+	{
+		music->pause();
+	}
+}
+
+void ResourceModule::create()
+{
+	_texman->rebuild();
+
+	//this->loadZipFile( "data/textures.zip" );
+}
+
+void ResourceModule::shutdown()
+{
+	if( _texman )
+	{
+		delete _texman;
+		_texman = 0;
+	}
+	if( _fontman )
+	{
+		delete _fontman;
+		_fontman = 0;
+	}
+	if( _soundMan )
+	{
+		delete _soundMan;
+		_soundMan = 0;
+	}
+
+	PHYSFS_removeFromSearchPath( "data/resources.epk" );
+	PHYSFS_deinit();
+}
+
+void ResourceModule::clear()
+{
+	_texman->clear();
+	_fontman->clear();
+	_soundMan->clear();
+}
+
+TextureManager* ResourceModule::getTexMan()
+{
+	return _texman;
+}
+
+FontManager* ResourceModule::getFontMan()
+{
+	return _fontman;
+}

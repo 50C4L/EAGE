@@ -1,0 +1,27 @@
+#ifndef _PHYXSTATE_H
+#define _PHYXSTATE_H
+
+#include "../../../src/helper/helper.h"
+
+
+class PhyxState: public State
+{
+public:
+			~PhyxState();
+	
+	void	enterFunc();
+	void	control();
+	void	leaveFunc();
+
+	static PhyxState* getInstance();
+
+protected:
+	PhyxState();
+	static PhyxState* _instance;
+
+private:
+	GameObject*	_ground;
+};	// class PhyxState
+
+
+#endif

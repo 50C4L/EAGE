@@ -1,0 +1,72 @@
+#ifndef _SYSTEM_H
+#define _SYSTEM_H
+
+#include <string>
+#include "../helper/AllHeaders.h"
+#include "../EAGE.h"
+#include "../helper/Timer.h"
+#include "../graphics/RenderModule.h"
+#include "../resource/ResourceModule.h"
+#include "../math/PhysicsModule.h"
+#include "../manager/StateManager.h"
+#include "Debugger.h"
+
+class System:public EAGE
+{
+	friend void				eage::exit();
+	friend int				eage::getElapsedMilliSec();
+	friend void				eage::removeUIWidget(std::shared_ptr<sfg::Widget> widget);
+	friend sfg::Desktop*	eage::getUIDesktop();
+	friend sf::Vector2f		eage::getMouseWorldCoord();
+	friend sf::Event		eage::getEvent();
+public:
+					~System();	
+	static System*	getInstance();
+
+	bool			initialize();
+	void			run();
+	void			setCoreParams( CoreParams param );
+	void			setStartState( int );
+	void			enableSplashScreen( bool value );
+	void			setSplashLength( float length );
+	void			shutdown();
+	void			loadCFG( std::string path );
+	void			appendSFGUIWidget( std::shared_ptr<sfg::Widget> widget );
+	std::string		getVersion();
+	int				appendState( int, State* );
+
+private:
+	bool			_readCFG();
+	bool			_writeCFG();
+	bool			_initGL();
+
+	std::string			_cfgPath;
+	sf::RenderWindow*	_window;
+	CoreParams			_params;
+	sf::Event*			_event;
+	Timer*				_timer;
+	TextureManager*		_texman;
+	StateManager*		_stateman;
+	RenderModule*		_renderModule;
+	ResourceModule*		_resourceModule;
+	PhysicsModule*		_physicsModule;
+	Debugger*			_debugger;
+	int					_startState;
+	bool				_isSplash;
+	bool				_isRunning;
+	float				_splashLength;
+
+	// debug info
+	double				_frameInterval;
+	bool				_consoleFlag;
+
+protected:
+					System();
+	static System*	_instance;
+
+	sfg::SFGUI		*_sfgui;
+	sfg::Desktop	*_desk;
+
+};	// class System
+
+#endif

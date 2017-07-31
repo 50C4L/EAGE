@@ -1,0 +1,35 @@
+#include "PhyxState.h"
+
+PhyxState* PhyxState::_instance = NULL;
+
+
+PhyxState* PhyxState::getInstance()
+{
+	if( !_instance ) _instance = new PhyxState();
+	return _instance;
+}
+
+
+PhyxState::PhyxState()
+{
+}
+
+
+PhyxState::~PhyxState()
+{
+}
+
+
+void PhyxState::enterFunc()
+{
+}
+
+
+void PhyxState::control()
+{
+}
+
+
+void PhyxState::leaveFunc()
+{
+}
